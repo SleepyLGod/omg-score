@@ -1,2 +1,2 @@
 # omg-score
-songs&amp;scores
+⭐ Listening to Songs and Recognizing Scores
