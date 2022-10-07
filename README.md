@@ -5,3 +5,5 @@
 + [**mt3**](https://github.com/magenta/mt3)
 + [**FoxStudio旗下Fox Music听歌识曲**](https://github.com/Foxteek/webmsbpy)
 + [**网易云音乐 听歌识曲™ 网页 Demo**](https://github.com/mos9527/ncm-afp)
++ [**midi解析器**](https://github.com/BShakhovsky/PianoTranscription_Windows)
++ [**扒谱哥**](https://github.com/EveElseIf)
