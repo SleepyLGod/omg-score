@@ -1,5 +1,6 @@
 /**
  * Contains misc static utility methods.
+ * @class Static utility methods.
  */
 class Utils {
 
@@ -8,8 +9,7 @@ class Utils {
 	 * @param {number} byte
 	 * @return {string}
 	 */
-	static byteToHex(byte) {
-		// Ensure hex string always has two chars
+	static byteToHex(byte) { // Ensure hex string always has two chars
 		return ('0' + byte.toString(16)).slice(-2);
 	}
 
@@ -59,28 +59,26 @@ class Utils {
 	 * @return {string}
 	 */
 	static decToBinary(dec) {
-    	return (dec >>> 0).toString(2);
+		return (dec >>> 0).toString(2);
 	}
 
 	/**
-	 * Determines the length in bytes of a variable length quaantity.  The first byte in given range is assumed to be beginning of var length quantity.
+	 * Determines the length in bytes of a variable length quaantity.  
+	 * The first byte in given range is assumed to be beginning of var length quantity.
+	 * Reference: http://www.ccarh.org/courses/253/handout/vlv/
 	 * @param {array} byteArray
 	 * @return {number}
 	 */
 	static getVarIntLength(byteArray) {
 		// Get byte count of delta VLV
-		// http://www.ccarh.org/courses/253/handout/vlv/
-		// If byte is greater or equal to 80h (128 decimal) then the next byte
-	    // is also part of the VLV,
+		// If byte is greater or equal to 80h (128 decimal) then the next byte is also part of the VLV,
 	   	// else byte is the last byte in a VLV.
-	   	let currentByte = byteArray[0];
-	   	let byteCount = 1;
-
+		let currentByte = byteArray[0];
+		let byteCount = 1;
 		while (currentByte >= 128) {
 			currentByte = byteArray[byteCount];
 			byteCount++;
 		}
-
 		return byteCount;
 	}
 
@@ -90,18 +88,16 @@ class Utils {
 	 * @return {number}
 	 */
 	static readVarInt(byteArray) {
-		var result = 0;
+		let result = 0;
 		byteArray.forEach(number => {
-			var b = number;
+			let b = number;
 			if (b & 0x80) {
 				result += (b & 0x7f);
 				result <<= 7;
-			} else {
-				/* b is the last byte */
+			} else { // b is the last byte
 				result += b;
 			}
 		});
-
 		return result;
 	}
 
@@ -111,7 +107,9 @@ class Utils {
 	 * @return {string}
 	 */
 	static atob(string) {
-		if (typeof atob === 'function') return atob(string);
+		if (typeof atob === 'function') {
+			return atob(string);
+		}
 		return Buffer.from(string, 'base64').toString('binary');
 	}
 }

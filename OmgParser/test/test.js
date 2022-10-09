@@ -66,15 +66,15 @@ describe('OmgParser', function() {
 			it('should load 500_Miles.mid file correctly.', function () {
 				var Player = new TestMidiPlayer.Player();
 				Player.loadFile('demo/midi/500_Miles.mid');
-				//assert.equal(3330, Player.buffer.length);
-				//assert.equal(2, Player.tracks.length);
+				// assert.equal(3330, Player.buffer.length);
+				// assert.equal(2, Player.tracks.length);
 			});
 
 			it('should load O-Zone_-_Dragostea_Din_Tei.mid file correctly.', function () {
 				var Player = new TestMidiPlayer.Player();
 				Player.loadFile('demo/midi/O-Zone_-_Dragostea_Din_Tei.mid');
-				//assert.equal(3330, Player.buffer.length);
-				//assert.equal(2, Player.tracks.length);
+				// assert.equal(3330, Player.buffer.length);
+				// assert.equal(2, Player.tracks.length);
 			});
 		});
 
@@ -91,7 +91,7 @@ describe('OmgParser', function() {
 			let Player;
 			beforeEach(function() {
 				this.clock = sinon.useFakeTimers();
-				this.clock.tick(5000); //set start time
+				this.clock.tick(5000); // set start time
 				Player = new TestMidiPlayer.Player();
 				Player.loadDataUri(zelda);
 			});
@@ -105,7 +105,7 @@ describe('OmgParser', function() {
 				const skipTicks = 123456;
 				Player.skipToTick(skipTicks);
 				Player.play();
-				this.clock.tick(6); //run 1 tick
+				this.clock.tick(6); // run 1 tick
 				Player.pause();
 				assert.equal(Player.getCurrentTick(), skipTicks + 1);
 			});
@@ -113,7 +113,7 @@ describe('OmgParser', function() {
 				const skipTicks = 123456;
 				Player.skipToTick(skipTicks);
 				Player.play();
-				this.clock.tick(6); //run 1 tick
+				this.clock.tick(6); // run 1 tick
 				Player.stop();
 				assert.equal(Player.getCurrentTick(), 0);
 			})
@@ -133,7 +133,7 @@ describe('OmgParser', function() {
 			let Player;
 			beforeEach(function () {
 				this.clock = sinon.useFakeTimers();
-				this.clock.tick(5000); //set start time
+				this.clock.tick(5000); // set start time
 				Player = new TestMidiPlayer.Player();
 				Player.loadDataUri(zelda);
 			});
@@ -144,7 +144,7 @@ describe('OmgParser', function() {
 				const skipTicks = 123456;
 				Player.skipToTick(skipTicks);
 				Player.play();
-				this.clock.tick(6); //run 1 tick
+				this.clock.tick(6); // run 1 tick
 				Player.stop();
 				assert.equal(Player.getSongTimeRemaining(), Player.getSongTime());
 			})

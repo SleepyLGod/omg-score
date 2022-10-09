@@ -1,5 +1,5 @@
 /**
- * Constants used in player.
+ * Contains constants used in player.
  */
 const Constants = {
 	VERSION: '2.0.16',
@@ -10,7 +10,9 @@ const Constants = {
 };
 
 // Builds notes object for reference against binary values.
-const allNotes = [['C'], ['C#','Db'], ['D'], ['D#','Eb'], ['E'],['F'], ['F#','Gb'], ['G'], ['G#','Ab'], ['A'], ['A#','Bb'], ['B']];
+const allNotes = [
+	['C'], ['C#','Db'], ['D'], ['D#','Eb'], ['E'],['F'], ['F#','Gb'], ['G'], ['G#','Ab'], ['A'], ['A#','Bb'], ['B']
+];
 var counter = 0;
 
 // All available octaves.

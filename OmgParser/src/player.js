@@ -36,7 +36,9 @@ class Player {
 		this.totalEvents = 0;
 		this.eventListeners = {};
 
-		if (typeof(eventHandler) === 'function') this.on('midiEvent', eventHandler);
+		if (typeof(eventHandler) === 'function') {
+			this.on('midiEvent', eventHandler);
+		}
 	}
 
 	/**
@@ -262,11 +264,13 @@ class Player {
 	 * @return {Player}
 	 */
 	play() {
-		if (this.isPlaying()) throw 'Already playing...';
-
+		if (this.isPlaying()) {
+			throw 'Already playing...';
+		}
 		// Initialize
-		if (!this.startTime) this.startTime = (new Date()).getTime();
-
+		if (!this.startTime) {
+			this.startTime = (new Date()).getTime();
+		}
 		// Start play loop
 		//window.requestAnimationFrame(this.playLoop.bind(this));
 		this.setIntervalId = setInterval(this.playLoop.bind(this), this.sampleRate);
@@ -277,12 +281,11 @@ class Player {
 	loop() {
 		setTimeout(function () {
 	        // Do Something Here
-	        this.playLoop();
-
+			this.playLoop();
 	        // Then recall the parent function to
 	        // create a recursive loop.
-	        this.loop();
-	    }.bind(this), this.sampleRate);
+			this.loop();
+		}.bind(this), this.sampleRate);
 	}
 
 	/**
@@ -332,7 +335,9 @@ class Player {
 	 * @return {Player}
 	 */
 	skipToPercent(percent) {
-		if (percent < 0 || percent > 100) throw "Percent must be number between 1 and 100.";
+		if (percent < 0 || percent > 100) {
+			throw "Percent must be number between 1 and 100.";
+		}
 		this.skipToTick(Math.round(percent / 100 * this.totalTicks));
 		return this;
 	}
@@ -344,7 +349,9 @@ class Player {
 	 */
 	skipToSeconds(seconds) {
 		var songTime = this.getSongTime();
-		if (seconds < 0 || seconds > songTime) throw seconds + " seconds not within song time of " + songTime;
+		if (seconds < 0 || seconds > songTime) {
+			throw seconds + " seconds not within song time of " + songTime;
+		}
 		this.skipToPercent(seconds / songTime * 100);
 		return this;
 	}
@@ -358,15 +365,15 @@ class Player {
 	}
 
 	/**
-	 * Plays the loaded MIDI file without regard for timing and saves events in this.events.  Essentially used as a parser.
+	 * Plays the loaded MIDI file without regard for timing and saves events in this.events.  
+	 * Essentially used as a parser.
 	 * @return {Player}
 	 */
-	dryRun() {
-		// Reset tracks first
+	dryRun() { // Reset tracks first
 		this.resetTracks();
 		while (!this.endOfFile()) {
 			this.playLoop(true);
-			//console.log(this.bytesProcessed(), this.midiChunksByteLength);
+			console.log(this.bytesProcessed(), this.midiChunksByteLength);
 		}
 		this.events = this.getEvents();
 		this.totalEvents = this.getTotalEvents();
@@ -376,9 +383,7 @@ class Player {
 
 		// Leave tracks in pristine condish
 		this.resetTracks();
-
-		//console.log('Song time: ' + this.getSongTime() + ' seconds / ' + this.totalTicks + ' ticks.');
-
+		console.log('Song time: ' + this.getSongTime() + ' seconds / ' + this.totalTicks + ' ticks.');
 		this.triggerPlayerEvent('fileLoaded', this);
 		return this;
 	}
@@ -467,7 +472,6 @@ class Player {
 		if (this.isPlaying()) {
 			return this.totalTicks - this.tick <= 0;
 		}
-
 		return this.bytesProcessed() >= this.midiChunksByteLength;//this.buffer.length;
 	}
 
@@ -476,7 +480,9 @@ class Player {
 	 * @return {number}
 	 */
 	getCurrentTick() {
-		if(!this.startTime) return this.startTick;
+		if(!this.startTime) {
+			return this.startTick;
+		}
 		return Math.round(((new Date()).getTime() - this.startTime) / 1000 * (this.division * (this.tempo / 60))) + this.startTick;
 	}
 
@@ -497,7 +503,9 @@ class Player {
 	 * @return {Player}
 	 */
 	on(playerEvent, fn) {
-		if (!this.eventListeners.hasOwnProperty(playerEvent)) this.eventListeners[playerEvent] = [];
+		if (!this.eventListeners.hasOwnProperty(playerEvent)) {
+			this.eventListeners[playerEvent] = [];
+		}
 		this.eventListeners[playerEvent].push(fn);
 		return this;
 	}
@@ -509,7 +517,9 @@ class Player {
 	 * @return {Player}
 	 */
 	triggerPlayerEvent(playerEvent, data) {
-		if (this.eventListeners.hasOwnProperty(playerEvent)) this.eventListeners[playerEvent].forEach(fn => fn(data || {}));
+		if (this.eventListeners.hasOwnProperty(playerEvent)) {
+			this.eventListeners[playerEvent].forEach(fn => fn(data || {}));
+		}
 		return this;
 	}
 
