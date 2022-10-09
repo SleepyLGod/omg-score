@@ -2,7 +2,8 @@ import {Constants} from './constants';
 import {Utils} from './utils';
 
 /**
- * Class representing a track.  Contains methods for parsing events and keeping track of pointer.
+ * Contains methods for parsing events and keeping track of pointer.
+ * @Class Representing a track.
  */
 class Track	{
 	constructor(index, data) {
@@ -64,7 +65,6 @@ class Track	{
 	 */
 	setEventIndexByTick(tick) {
 		tick = tick || 0;
-
 		for (var i in this.events) {
 			if (this.events[i].tick >= tick) {
 				this.eventIndex = i;
@@ -104,26 +104,24 @@ class Track	{
 	 */
 	handleEvent(currentTick, dryRun) {
 		dryRun = dryRun || false;
-
 		if (dryRun) {
 			var elapsedTicks = currentTick - this.lastTick;
 			var delta = this.getDelta();
 			var eventReady = elapsedTicks >= delta;
-
 			if (this.pointer < this.data.length && (dryRun || eventReady)) {
 				let event = this.parseEvent();
-				if (this.enabled) return event;
-				// Recursively call this function for each event ahead that has 0 delta time?
+				if (this.enabled) {
+					return event;
+				} // Recursively call this function for each event ahead that has 0 delta time?
 			}
-
-		} else {
-			// Let's actually play the MIDI from the generated JSON events created by the dry run.
+		} else { // Let's actually play the MIDI from the generated JSON events created by the dry run.
 			if (this.events[this.eventIndex] && this.events[this.eventIndex].tick <= currentTick) {
 				this.eventIndex++;
-				if (this.enabled) return this.events[this.eventIndex - 1];
+				if (this.enabled) {
+					return this.events[this.eventIndex - 1];
+				}
 			}
 		}
-
 		return null;
 	}
 
@@ -136,7 +134,6 @@ class Track	{
 		const varIntLength = Utils.getVarIntLength(this.data.subarray(eventStartIndex + 2));
 		const varIntValue = Utils.readVarInt(this.data.subarray(eventStartIndex + 2, eventStartIndex + 2 + varIntLength));
 		const letters = Utils.bytesToLetters(this.data.subarray(eventStartIndex + 2 + varIntLength, eventStartIndex + 2 + varIntLength + varIntValue));
-
 		return letters;
 	}
 
@@ -158,7 +155,6 @@ class Track	{
 		//eventJson.raw = event;
 		if (this.data[eventStartIndex] == 0xff) {
 			// Meta Event
-
 			// If this is a meta event we should emit the data and immediately move to the next event
 			// otherwise if we let it run through the next cycle a slight delay will accumulate if multiple tracks
 			// are being played simultaneously
@@ -225,21 +221,16 @@ class Track	{
 					// FF 59 02 sf mi
 					eventJson.name = 'Key Signature';
 					eventJson.data = this.data.subarray(eventStartIndex + 3, eventStartIndex + 5);
-
 					if (eventJson.data[0] >= 0) {
 						eventJson.keySignature = Constants.CIRCLE_OF_FIFTHS[eventJson.data[0]];
-
 					} else if (eventJson.data[0] < 0) {
 						eventJson.keySignature = Constants.CIRCLE_OF_FOURTHS[Math.abs(eventJson.data[0])];
 					}
-
 					if (eventJson.data[1] == 0) {
 						eventJson.keySignature += " Major";
-
 					} else if (eventJson.data[1] == 1) {
 						eventJson.keySignature += " Minor";
 					}
-
 					break;
 				case 0x7F: // Sequencer-Specific Meta-event
 					eventJson.name = 'Sequencer-Specific Meta-event';
@@ -419,7 +410,6 @@ class Track	{
 		if (this.data[this.pointer + 1] == 0xff && this.data[this.pointer + 2] == 0x2f && this.data[this.pointer + 3] == 0x00) {
 			return true;
 		}
-
 		return false;
 	}
 }
