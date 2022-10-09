@@ -33,18 +33,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/grimmdude/MidiPlayerJS.git"
+    "url": "git+https://github.com/SleepyLGod/omg-score.git"
   },
   "bugs": {
-    "url": "https://github.com/grimmdude/MidiPlayerJS/issues"
+    "url": "https://github.com/SleepyLGod/omg-score/issues"
   },
   "keywords": [
     "midi",
     "parser",
     "player"
   ],
-  "author": "Garrett Grimm",
-  "license": "MIT",
+  "author": "Haodong Lu",
+  "license": "Mozilla",
   "engines": {
     "node": ">=10.0.0"
   },
