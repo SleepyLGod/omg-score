@@ -1,6 +1,6 @@
-# &#9836; OmgParser
+# &#9836; OmgSimplePlayer
 
-**OmgParser** is a JavaScript applet which reads standard MIDI files, emits JSON events in real time, and then converts the events and play them in the web page.
+**OmgSimplePlayer** is a JavaScript applet which reads standard MIDI files, emits JSON events in real time, and then converts the events and play them in the web page.
 
 ## Getting Started
 
