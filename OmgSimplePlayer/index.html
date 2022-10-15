@@ -5,14 +5,14 @@
 <head>
 	<meta charset="utf-8">
 	<!--中文编码-->
-	<meta name="description" content="Play MIDI files from your browser with OmgParser" />
+	<meta name="description" content="Play MIDI files from your browser with OmgSimplePlayer" />
 	<!--描述信息-->
 	<meta name="keywords" content="MIDI, music, player, javascript" />
 	<!--关键词-->
 	<meta name="author" content="Haodong Lu">
 	<link rel="shortcut icon" href="./image/html-logo.ico">
 	<!--图标-->
-	<title>OmgParser - JavaScript Midi Player</title>
+	<title>OmgSimplePlayer - JavaScript Midi Player</title>
 	<!--标题-->
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!--设置layout viewport的宽度为设备宽度；初始缩放值为1-->
@@ -26,50 +26,24 @@
 	<!--外部样式表-->
 	<link href="https://fonts.googleapis.com/css?family=Bree+Serif" rel="stylesheet">
 	<style type="text/css">
-		body {
-			background: #ffffff;
-		}
-
-		h1 {
-			text-shadow: 2px 3px 1px #ccc;
-		}
-
+		body {background: #ffffff;}
+		h1 {text-shadow: 2px 3px 1px #ccc;}
 		h1,
 		h2,
-		h3 {
-			font-family: 'Bree Serif', serif;
-		}
-
+		h3 {font-family: 'Bree Serif', serif;}
 		h4,
-
-		#select-file {
-			display: none;
-		}
-
-		* {
-			margin: 0;
-			padding: 0;
-		}
-
-		.box {
-			background: radial-gradient(rgb(58, 160, 207), rgb(42, 167, 123));
-		}
-
+		#select-file {display: none;}
+		* {	margin: 0; padding: 0;}
+		.box {background: radial-gradient(rgb(58, 160, 207), rgb(42, 167, 123));}
 		button {
 			background-color: rgb(50, 46, 46);
 			border: 0 solid rgb(255, 255, 255);
 			border-radius: 10px;
 			color: #fff;
 			padding: 8px;
-			box-shadow: 0 0 10px 0 rgb(151, 219, 33),
-				0 0 10px 0 crimson,
-				0 0 10px 0 rgb(0, 191, 255) inset;
+			box-shadow: 0 0 10px 0 rgb(151, 219, 33), 0 0 10px 0 crimson, 0 0 10px 0 rgb(0, 191, 255) inset;
 		}
-
-		
 	</style>
-
-
 </head>
 
 <body>
@@ -79,14 +53,14 @@
 				<div class="container" style="padding-top:12px;">
 					<div class="row">
 						<div class="twelve columns">
-							<h1 style="font-size: 40px;">&#9836; OmgParser</h1>
+							<h1 style="font-size: 40px;">&#9836; OmgSimplePlayer</h1>
 							<br />
-							<p style="font-family: verdana;font-size: 15px;">OmgParser is a javascript library which
+							<p style="font-family: verdana;font-size: 15px;">OmgSimplePlayer is a javascript library which
 								triggers events in sequence with a given MIDI
 								file.
 								This MIDI player was built using <a
-									href="https://github.com/SleepyLGod/omg-score/OmgParser"
-									target="_blank">OmgParser</a> to read the file,
+									href="https://github.com/SleepyLGod/omg-score"
+									target="_blank">OmgSimplePlayer</a> to read the file,
 								and <a href="https://github.com/danigb/soundfont-player"
 									target="_blank">soundfont-player</a> to load and
 								play the sounds.</p>
@@ -172,28 +146,23 @@
 					}
 
 					@keyframes octocat-wave {
-
 						0%,
 						100% {
 							transform: rotate(0)
 						}
-
 						20%,
 						60% {
 							transform: rotate(-25deg)
 						}
-
 						40%,
 						80% {
 							transform: rotate(10deg)
 						}
 					}
-
 					@media (max-width:500px) {
 						.github-corner:hover .octo-arm {
 							animation: none
 						}
-
 						.github-corner .octo-arm {
 							animation: octocat-wave 560ms ease-in-out
 						}
@@ -216,11 +185,10 @@
 					ga('create', 'UA-1454657-6', 'auto');
 					ga('send', 'pageview');
 				</script>
-				<!--<p style="text-align: center;">
+				<p style="text-align: center;">
 					<img src="./image/R.png" width="800" height="300">
-				</p>-->
+				</p>
 			</span>
-
 		</div>
 	</div>
 </body>
