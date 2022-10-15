@@ -1,6 +1,13 @@
-3d-piano-player
-===============
+# 🎼 OmgPianoPlayer
+---
 
-3D Piano player demo. Uses three.js and MIDI.js
+🌃 OmgPianoPlayer is a web applet uses three.js and MIDI.js
 
-See the demo live at http://www.borjamorales.com/3d-piano-player/
+# How to run:
++ Add git submodules:
+  ```shell
+  git submodule
+  git submodule init
+  git submodule update
+  ```
+  P.S. These actions must be done after you clone the whole project.
