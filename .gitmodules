@@ -1,0 +1,3 @@
+[submodule "OmgPianoPlayer/res/MIDI"]
+	path = OmgPianoPlayer/res/MIDI
+	url = https://github.com/mudcube/MIDI.js.git
