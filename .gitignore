@@ -127,3 +127,5 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+OmgPianoTranscription/pianotranscriptioncli/src/main/resources/transcription.onnx
