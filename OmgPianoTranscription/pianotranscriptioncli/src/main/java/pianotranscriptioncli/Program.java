@@ -7,8 +7,7 @@ import java.nio.file.Files;
 
 public class Program {
     public static void main(String[] args) throws Exception {
-
-        // Modify this please
+        
         System.out.println(System.getProperty("user.dir"));
         String resourcePath = System.getProperty("user.dir") + "\\src\\main\\resources\\";
         String songName = "雨的印记";
