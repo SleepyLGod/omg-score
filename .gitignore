@@ -183,4 +183,3 @@ fabric.properties
 # modules.xml
 
 *.onnx
-OmgPianoTranscription/pianotranscriptioncli/src/main/resources/transcription.onnx
