@@ -1,16 +1,31 @@
-package pianotranscriptioncli;
+package com.pianotranscriptioncli.utils;
 
 import libpianotranscription.Transcriptor;
 
 import java.io.*;
 import java.nio.file.Files;
 
-public class Program {
-    public static void main(String[] args) throws Exception {
-        
-        System.out.println(System.getProperty("user.dir"));
-        String resourcePath = System.getProperty("user.dir") + "\\src\\main\\resources\\";
-        String songName = "雨的印记";
+public class Utils {
+    public static short[] toShortLE(byte[] bytes) {
+        short[] output = new short[bytes.length / 2];
+        for (int i = 0; i < bytes.length; i += 2) {
+            var x = ((bytes[i + 1]) & 0xff) << 8;
+            var y = bytes[i] & 0xff;
+            output[i / 2] = (short) (x | y);
+        }
+        return output;
+    }
+
+    public static float[] normalizeShort(short[] shorts) {
+        var output = new float[shorts.length];
+        for (int i = 0; i < shorts.length; i++) {
+            output[i] = (float) shorts[i] / 32767;
+        }
+        return output;
+    }
+
+    public static String Convertor(String resourcePath, String songName) throws Exception {
+
         String inputFilePath = resourcePath + "input\\" + songName + ".mp3";
         String outPutFilePath = resourcePath + "output\\" + songName + ".mid";
 
@@ -27,12 +42,13 @@ public class Program {
         var out = transcriptor.transcript(b);
         try(var file = new FileOutputStream(outPutFilePath)) {
             file.write(out);
+            System.out.println("OK");
+//            System.exit(0);
+            return outPutFilePath;
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
-
-        System.out.println("OK");
-        System.exit(0);
+        return null;
     }
 
     private static void preProcessFile(String fileName) throws Exception {
