@@ -1,0 +1,4 @@
+.idea
+transcription.onnx
+target
+/pianotranscriptioncli/src/main/resources/output/
