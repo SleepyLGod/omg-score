@@ -1,2 +1,12 @@
 server:
     port: 8084
+
+spring:
+  devtools:
+    restart:
+      enabled: true # 热部署默认会重启
+      additional-paths: src/main/java # 热部署监控的路径
+      exclude: src/main/resources/ # 热部署排除的路径
+  servlet:
+    multipart:
+      max-file-size: 100MB
