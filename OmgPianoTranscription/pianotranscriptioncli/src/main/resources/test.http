@@ -1,0 +1,13 @@
+POST {{host}}/fuck
+
+###
+
+POST {{host}}/mp3ToMidi
+Content-Type: application/json
+
+{
+    "isAbsolute": "false",
+    "resourcePath": "\\pianotranscriptioncli\\src\\main\\resources\\",
+    "songName": "雨的印记"
+}
+
