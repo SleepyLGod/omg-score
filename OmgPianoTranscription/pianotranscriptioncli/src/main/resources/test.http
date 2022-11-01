@@ -1,7 +1,25 @@
+###
+POST {{host}}/mp3ToMidiWithFile
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="雨的印记.mp3"
+
+< ./input/雨的印记.mp3
+--WebAppBoundary--
+Content-Disposition: form-data; name="outPath"
+
+D:\\gitrepositories\\omg-score\\OmgPianoTranscription\\pianotranscriptioncli\\src\\main\\resources\\output\\
+--WebAppBoundary--
+Content-Disposition: form-data; name="songName"
+
+雨的印记
+--WebAppBoundary--
+
+###
 POST {{host}}/fuck
 
 ###
-
 POST {{host}}/mp3ToMidi
 Content-Type: application/json
 
@@ -10,4 +28,6 @@ Content-Type: application/json
     "resourcePath": "\\pianotranscriptioncli\\src\\main\\resources\\",
     "songName": "雨的印记"
 }
+
+###
 

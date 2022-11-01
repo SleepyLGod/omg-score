@@ -51,6 +51,30 @@ public class Utils {
         return null;
     }
 
+    public static String ConvertorRedirect(String resourcePath, String songName, String outputPath) throws Exception {
+
+        preProcessFile(resourcePath + "input\\" + songName + ".mp3");
+        byte[] a = Files.readAllBytes(new File("test.pcm").toPath());
+        var b = Utils.normalizeShort(Utils.toShortLE(a));
+        try {
+            var ans = new File("test.pcm").delete();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        var transcriptor = new Transcriptor(resourcePath + "transcription.onnx");
+        var out = transcriptor.transcript(b);
+        try(var file = new FileOutputStream(outputPath)) {
+            file.write(out);
+            System.out.println("OK");
+//            System.exit(0);
+            return outputPath;
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+        return null;
+    }
+
     private static void preProcessFile(String fileName) throws Exception {
         String[] cmd = {"ffmpeg", "-i", fileName, "-ac", "1", "-ar", "16000", "-f", "s16le", "test.pcm", "-y"};
         var process = Runtime.getRuntime().exec(cmd); // 调用命令行

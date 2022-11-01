@@ -2,6 +2,7 @@ package com.pianotranscriptioncli.controller;
 
 import com.pianotranscriptioncli.common.api.CommonResult;
 import com.pianotranscriptioncli.dto.Mp3ImportDTO;
+import com.pianotranscriptioncli.dto.Mp3ImportWithFileDTO;
 import com.pianotranscriptioncli.service.TranscriptionService;
 import com.pianotranscriptioncli.service.impl.TranscriptionServiceImpl;
 import com.pianotranscriptioncli.vo.Mp3ImportVO;
@@ -42,32 +43,21 @@ public class TranscriptionController {
 
 
     @ResponseBody
-    @RequestMapping(value = "/mp3ToMidiWithFile", produces = {"text/html;charset=UTF-8;"})
-    public void uploadLog(@RequestParam("Mp3FileName") MultipartFile file, HttpServletRequest request) {
-        if (!file.isEmpty()) {
-            // 获取文件名
-            String fileName = file.getOriginalFilename();
-            // 获取文件的后缀名
-            assert fileName != null;
-            String suffixName = fileName.substring(fileName.lastIndexOf("."));
-            // 文件上传后的路径
-            String filePath = "";
-            File dest = new File(filePath + fileName);
-            // 检测是否存在目录
-            if (!dest.getParentFile().exists()) {
-                dest.getParentFile().mkdirs();
+    @PostMapping(value = "/mp3ToMidiWithFile", consumes = {"multipart/form-data"})
+    public Mp3ImportVO Mp3ToMidiWithFile(@RequestParam("file")MultipartFile file,
+                                         @RequestParam("outPath")String outPath,
+                                         @RequestParam("songName")String songName) throws Exception {
+        Mp3ImportWithFileDTO mp3ImportWithFileDTO = new Mp3ImportWithFileDTO(file, outPath, songName);
+        try {
+            CommonResult commonResult = transcriptionService.Mp3TOMidiUploadWithFile(mp3ImportWithFileDTO);
+            if (commonResult.getCode() == 1) {
+                return new Mp3ImportVO(true, commonResult.getData().toString(), null);
+            } else {
+                return new Mp3ImportVO(false, null, commonResult.getMessage());
             }
-            try {
-                file.transferTo(dest);
-                System.out.println("日志文件上传成功!");
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-                System.out.println("日志文件上传失败!" + e);
-            }
-        } else {
-            System.out.println("日志文件上传失败！");
+        } catch (NullPointerException e) {
+            return new Mp3ImportVO(false, null, "请检查是否传入了正确的参数");
         }
     }
+
 }
