@@ -11,15 +11,13 @@ public class Mp3ImportWithFileDTO {
     @NonNull
     private MultipartFile file;
     @NonNull
-    private String outPath;
-    @NonNull
     private String songName;
     @NonNull
     private String inputPath = "D:\\gitrepositories\\omg-score\\OmgPianoTranscription\\pianotranscriptioncli\\src\\main\\resources\\";
-
-    public Mp3ImportWithFileDTO(MultipartFile file, String outPath, String songName) {
+    @NonNull
+    private String outPath = "D:\\gitrepositories\\omg-score\\OmgPianoTranscription\\pianotranscriptioncli\\src\\main\\resources\\output\\";
+    public Mp3ImportWithFileDTO(MultipartFile file, String songName) {
         this.file = file;
-        this.outPath = outPath;
         this.songName = songName;
     }
 

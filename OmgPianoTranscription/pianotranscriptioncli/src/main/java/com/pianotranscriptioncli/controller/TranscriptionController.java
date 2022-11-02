@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 
@@ -45,19 +46,21 @@ public class TranscriptionController {
 
     @ResponseBody
     @PostMapping(value = "/mp3ToMidiWithFile", consumes = {"multipart/form-data"})
-    public Mp3ImportVO Mp3ToMidiWithFile(@RequestParam("file")MultipartFile file,
-                                         @RequestParam("outPath")String outPath,
-                                         @RequestParam("songName")String songName) throws Exception {
-        Mp3ImportWithFileDTO mp3ImportWithFileDTO = new Mp3ImportWithFileDTO(file, outPath, songName);
+    public void Mp3ToMidiWithFile(@RequestParam("file")MultipartFile file,
+                                  // @RequestParam("outPath")String outPath,
+                                  @RequestParam("songName")String songName,
+                                  HttpServletResponse response) throws Exception {
+        Mp3ImportWithFileDTO mp3ImportWithFileDTO = new Mp3ImportWithFileDTO(file, songName);
         try {
-            CommonResult commonResult = transcriptionService.Mp3TOMidiUploadWithFile(mp3ImportWithFileDTO);
+            CommonResult commonResult = transcriptionService.Mp3TOMidiUploadWithFile(mp3ImportWithFileDTO, response);
             if (commonResult.getCode() == 1) {
-                return new Mp3ImportVO(true, commonResult.getData().toString(), null);
+                System.out.println("success");
             } else {
-                return new Mp3ImportVO(false, null, commonResult.getMessage());
+                System.out.println("fail");
             }
         } catch (NullPointerException e) {
-            return new Mp3ImportVO(false, null, "请检查是否传入了正确的参数");
+            System.out.println("fail");
+            e.printStackTrace();
         }
     }
 
