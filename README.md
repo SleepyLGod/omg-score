@@ -1,11 +1,17 @@
 <h3 align="center">
     <img src="https://readme-typing-svg.herokuapp.com/?font=Roboto+Mono&size=25&width=240&color=46BEA3duration=1600&lines=🎵Omg+Player🎶" height="80"/></br>
-    <font>⭐ Transferring piano pieces and playing them dynamically in the browser. 🌠</font>
+    <font>✨ Transferring piano pieces and playing them dynamically in the browser. 🌠</font>
 </h3>
 
 <div align="center">
   <p>
-    <a href="#"><img src="https://custom-icon-badges.herokuapp.com/github/last-commit/SleepyLGod/omg-score" alt="omg-score"/></a> 
+    <!-- ?style=flat-square -->
+    <a href="#"><img src="https://custom-icon-badges.herokuapp.com/github/last-commit/SleepyLGod/omg-score" alt="omg-score"/></a>
+    <a href="#"><img src="https://img.shields.io/badge/all_contributors-0x4-orange.svg" alt="omg-score"/></a>
+    <a href="#"><img src="https://circleci.com/gh/codesandbox/codesandbox-client.svg?style=svg" alt="omg-score"/></a>
+    <a href="#"><img src="https://www.browserstack.com/automate/badge.svg" alt="omg-score"/></a>
+    <a href="#"><img src="https://img.shields.io/badge/PRs-welcome-gold.svg" alt="omg-score"/></a>
+    <a href="#"><img src="https://img.shields.io/badge/first--timers--only-friendly-blue.svg" alt="omg-score"/></a>
   </p>
 </div>  
 
