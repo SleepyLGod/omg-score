@@ -20,12 +20,12 @@ git clone git@github.com:SleepyLGod/omg-score.git
 + The [OmgPianoPlayer](./OmgPianoPlayer) and [OmgPianoTranscription](./OmgPianoTranscription) is the web applet to convert mp3 files to midi files of piano pieces, and play them dynamically. The former is the frontend and the latter is the backend. You can see a three-dimensional piano model and adjust its spatial position freely. When the piano is being played, you can see the keys move with the notes, and you can also download the converted midi files and use them for other playback editors and editors.
 
 ## 🔨 Tasks
-- [ ] Convert mp3 files to standard midi files.
+- [x] Convert mp3 files to standard midi files.
 - [ ] Convert songs and pieces in other formats like wav to standard midi files.
-- [ ] Choose and upload local files freely.
-- [ ] Play all kinds of standard midi files in the web page simply.
-- [ ] Change the song tempo in the simple player.
-- [ ] Play midi files(piano pieces) in the web page dynamically.
+- [x] Choose and upload local files freely.
+- [x] Play all kinds of standard midi files in the web page simply.
+- [x] Change the song tempo in the simple player.
+- [x] Play midi files(piano pieces) in the web page dynamically.
 - [ ] Change the song tempo in the dynamic player.
 - [ ] Play midi files of various musical instruments in the web page dynamically.
 - [ ] Modify the converting and transmitting speed.
