@@ -57,12 +57,12 @@ public class MidiWriter {
         roll.sort(Comparator.comparing(x -> x.getA()));
 
         // write midi message to track 1
-        //var previousTicks = 0;
+        // var previousTicks = 0;
         for (var m : roll) {
             var thisTicks = (int) ((m.getA() - startTime) * ticksPerSecond);
             if (thisTicks >= 0) {
-                //var diffTicks = thisTicks - previousTicks;
-                //previousTicks = thisTicks;
+                // var diffTicks = thisTicks - previousTicks;
+                // previousTicks = thisTicks;
                 if (m.getType() == 0) {
                     var sm = new ShortMessage();
                     sm.setMessage(0x90, m.getB(), m.getC());
