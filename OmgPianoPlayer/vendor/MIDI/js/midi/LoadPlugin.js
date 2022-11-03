@@ -36,7 +36,7 @@ MIDI.loadPlugin = function(conf) {
 		}
 	};
 	///
-	MIDI.soundfontUrl = conf.soundfontUrl || MIDI.soundfontUrl || "./soundfont/";
+	MIDI.soundfontUrl = conf.soundfontUrl || MIDI.soundfontUrl || "./vendor/MIDI/soundfont/";
 	/// Detect the best type of audio to use.
 	MIDI.audioDetect(function(types) {
 		var api = "";
