@@ -1,10 +1,10 @@
 package libpianotranscription.midi;
 
 public class NoteEvent {
-    private final float onsetTime;
-    private final float offsetTime;
-    private final int midiNote;
-    private final int velocity;
+    private final float onsetTime;  //启动时间
+    private final float offsetTime;  //终止时间
+    private final int midiNote;    //midi记录
+    private final int velocity;  //速度
 
     public NoteEvent(float onsetTime, float offsetTime, int midiNote, int velocity) {
         this.onsetTime = onsetTime;
