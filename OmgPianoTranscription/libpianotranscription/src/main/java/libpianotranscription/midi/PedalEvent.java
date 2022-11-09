@@ -1,6 +1,6 @@
 package libpianotranscription.midi;
 
-public class PedalEvent {//似乎是用来计时的类
+public class PedalEvent {//踏板事件,记录每一个pedalEvents对象的开始时刻和结束时刻
     private final float onsetTime;
     private final float offsetTime;
 

@@ -1,0 +1,25 @@
+
+<html>
+
+<head>
+    <title>hi</title>
+</head>
+
+<body>
+    <script>
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "http://localhost:8084/transcription/mp3ToMidi", true);
+        xhr.setRequestHeader('content-type', 'application/json');
+
+        var sendData = {
+            "isAbsolute": "false",
+            "resourcePath": "\\pianotranscriptioncli\\src\\main\\resources\\",
+            "outPath": "\\pianotranscriptioncli\\src\\main\\resources\\output",
+            "songName": "雨的印记"
+        };
+        //将用户输入值序列化成字符串
+        xhr.send(JSON.stringify(sendData));
+
+
+    </script>
+</body>

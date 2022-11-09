@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 
 @RestController
+// @CrossOrigin(origins = "*", maxAge = 360000) // 不能和CorsConfig同时使用
 @RequestMapping("/transcription")
 public class TranscriptionController {
 

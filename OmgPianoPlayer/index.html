@@ -20,7 +20,7 @@
         <script src="./vendor/three.js"></script>
 
         <script src="./vendor/OrbitAndPanControls.js"></script>
-        <script src="./vendor/ColladaLoader.js"></script> -->
+        <script src="./vendor/ColladaLoader.js"></script>
 
         <style>
             canvas {width: 100%; height: 100%}
@@ -42,12 +42,339 @@
         </style>    
     </head>
     <body>
+        <!--<input type="file" accept="mid">-->
         <script type="text/javascript">
-            //MIDI Loader
 
-
-            //3d
-            var sceen=new THREE.Sceen();
+            MIDI.loader = new widgets.Loader({ message: "Loading: Soundfont..." }); 
+    
+            var scene = new THREE.Scene();
+    
+            var camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 2.0, 5000);
+            camera.position.x = -2.77;
+            camera.position.z = 10.04;
+            camera.position.y = 5.5;
+    
+            floor = new THREE.Mesh(new THREE.PlaneGeometry(8000, 8000), new THREE.MeshBasicMaterial({ color: 0xf0f0f0 }));
+            floor.rotation.x = - 90 * (Math.PI / 180); //桌面与钢琴的夹角，默认为垂直
+            floor.position.y = -0.45; //桌面的纵坐标
+            floor.receiveShadow = true; //接受钢琴投影在桌面上
+            scene.add(floor); //添加到场景中  
+    
+            var spotlight = new THREE.DirectionalLight(0xffffff); //平行光强度
+            spotlight.position.set(1.0, 2.4, -7.5); //光源位置
+            spotlight.target.position.set(6.0, -6, 7); //光源指向
+            spotlight.shadowDarkness = 0.75; //影子深度
+            spotlight.intensity = 1; //光照强度
+            spotlight.castShadow = true; //是否产生阴影
+            //决定有多少像素用来构成阴影
+            spotlight.shadowMapWidth = 2048;
+            spotlight.shadowMapHeight = 2048;
+            //投影相机
+            spotlight.shadowCameraNear = 5.0; //表示到距离光源的哪一个位置开始生成阴影
+            spotlight.shadowCameraFar = 20.0; //表示到距离光源的哪一个位置可以生成阴影
+            spotlight.shadowBias = 0.0025; //解决自遮挡阴影瑕疵(shadow acne)
+            //投影边界
+            spotlight.shadowCameraLeft = -8.85;
+            spotlight.shadowCameraRight = 5.5;
+            spotlight.shadowCameraTop = 4;
+            spotlight.shadowCameraBottom = 0;
+            scene.add(spotlight);
+            var light = new THREE.DirectionalLight(0xddffff, 0.5);
+            light.position.set(1, 1, 1).normalize();
+            scene.add(light);
+            var light = new THREE.DirectionalLight(0xff5555, 0.5);
+            light.position.set(-1, -1, -1).normalize();
+            scene.add(light);
+    
+            var controls = new function () {
+                this.key_attack_time = 9.0; //按键时间，小的时候有变化感
+                this.key_max_rotation = 0.72; //琴键旋转角
+                this.octave = 2; //八度
+                this.song = "game_of_thrones.mid"; //选择一个预览
+                this.noteOnColor = [255, 0, 0, 1.0]; //颜色数组
+                this.play = function ()//播放
+                {
+                    MIDI.Player.resume();
+                };
+                this.stop = function ()//停止至开始
+                {
+                    MIDI.Player.stop();
+                }
+            };
+            
+            var keyState = Object.freeze({ unpressed: {}, note_on: {}, pressed: {}, note_off: {} }); //冻结四个要素，不能被修改
+    
+            var renderer = new THREE.WebGLRenderer({ antialias: true }); //开启反锯齿
+            renderer.setSize(window.innerWidth, window.innerHeight); //设置渲染区域尺寸         
+            renderer.shadowMapEnabled = true;  //阴影效果
+            renderer.gammaInput = true;
+            renderer.gammaOutput = true;
+            renderer.physicallyBasedShading = true;
+            document.body.appendChild(renderer.domElement);
+     
+            var material = new THREE.MeshLambertMaterial({ color: 0x606060 }); //颜色没什么关系
+    
+            noteOnColor = new THREE.Color().setRGB(controls.noteOnColor[0] / 256.0, controls.noteOnColor[1] / 256.0, controls.noteOnColor[2] / 256.0);
+    
+            var loader = new THREE.ColladaLoader();
+            loader.load('./vendor/obj/piano.dae', prepare_scene);
+    
+            var cameraControls = new THREE.OrbitAndPanControls(camera, renderer.domElement); //实现鼠标和键盘控制
+            cameraControls.target.set(4.5, 0, 0); //三维旋转中心
+    
+            var clock = new THREE.Clock();
+    
+            function on_window_resize() //设置大小
+            {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix(); //每渲染一次重新计算一次
+    
+                renderer.setSize(window.innerWidth, window.innerHeight); //渲染区域大小
+            }
+            //场景准备
+            function prepare_scene(collada) {
+                collada.scene.traverse(initialize_keys);
+                scene.add(collada.scene);
+            }
+            var keys_down = [];
+            var keys_obj = [];
+    
+            function initialize_keys(obj) {
+                keys_obj.push(obj);
+                obj.rotation.x = -Math.PI / 4.0; //旋转度
+                obj.rotation.y = 0;
+                obj.rotation.z = 0;
+                obj.keyState = keyState.unpressed; //未按状态
+                obj.clock = new THREE.Clock(false); //设置时钟
+                obj.castShadow = true; //阴影
+                obj.receiveShadow = true;
+    
+                // only add meshes in the material redefinition (to make keys change their color when pressed)
+                //按键颜色改变
+                if (obj instanceof THREE.Mesh) {
+                    old_material = obj.material; //材质不变
+                    obj.material = new THREE.MeshPhongMaterial({ color: old_material.color }); //
+                    obj.material.shininess = 35.0;
+                    obj.material.specular = new THREE.Color().setRGB(0.25, 0.25, 0.25);
+                    obj.material.note_off = obj.material.color.clone();
+    
+                }
+    
+            }
+            //琴键状态
+            function key_status(keyName, status) {
+                var obj = scene.getObjectByName(keyName, true);
+                if (obj != undefined) {
+                    obj.clock.start();
+                    obj.clock.elapsedTime = 0;
+                    obj.keyState = status;
+                }
+            }
+            
+            function frame() {
+                requestAnimationFrame(frame);
+    
+                var delta = clock.getDelta();
+    
+                update(delta);
+    
+                render(delta);
+    
+            }
+            function smoothstep(a, b, x) {
+                if (x < a) return 0.0;
+                if (x > b) return 1.0;
+                var y = (x - a) / (b - a);
+                return y * y * (3.0 - 2.0 * y);
+            }
+    
+            function mix(a, b, x) {
+                return a + (b - a) * Math.min(Math.max(x, 0.0), 1.0);
+            }
+            //更新琴键状态***********
+            function update_key(obj, delta) {
+                if (obj.keyState == keyState.note_on) { //按下
+                    obj.rotation.x = mix(-Math.PI / 4.0, -controls.key_max_rotation, smoothstep(0.0, 1.0, controls.key_attack_time * obj.clock.getElapsedTime())); //根据时间变化
+                    if (obj.rotation.x >= -controls.key_max_rotation) {
+                        obj.keyState = keyState.pressed;
+                        obj.clock.elapsedTime = 0;
+                    }
+                    obj.material.color = noteOnColor;
+                }
+                else if (obj.keyState == keyState.note_off) {
+                    obj.rotation.x = mix(-controls.key_max_rotation, -Math.PI / 4.0, smoothstep(0.0, 1.0, controls.key_attack_time * obj.clock.getElapsedTime()));
+                    if (obj.rotation.x <= -Math.PI / 4.0) {
+                        obj.keyState = keyState.unpressed;
+                        obj.clock.elapsedTime = 0;
+                    }
+                    obj.material.color = obj.material.note_off;
+                }
+            }
+            //*************
+            function update(delta) {
+                cameraControls.update(delta);
+                for (i in keys_obj) {
+                    update_key(keys_obj[i], delta);
+                }
+    
+            }
+            //渲染
+            function render(delta) {
+                renderer.render(scene, camera);
+            };
+    
+            frame();
+            //******************
+            function keyCode_to_note(keyCode) {
+                var note = -1;
+                //-----------------------------------
+                if (keyCode == 90) note = 0; // C 0
+                if (keyCode == 83) note = 1; // C#0
+                if (keyCode == 88) note = 2; // D 0
+                if (keyCode == 68) note = 3; // D#0
+                if (keyCode == 67) note = 4; // E 0
+                if (keyCode == 86) note = 5; // F 0
+                if (keyCode == 71) note = 6; // F#0
+                if (keyCode == 66) note = 7; // G 0
+                if (keyCode == 72) note = 8; // G#0
+                if (keyCode == 78) note = 9; // A 0
+                if (keyCode == 74) note = 10; // A#0
+                if (keyCode == 77) note = 11; // B 0
+                if (keyCode == 188) note = 12; // C 0
+    
+                //-----------------------------------
+                if (keyCode == 81) note = 12; // C 1
+                if (keyCode == 50) note = 13; // C#1
+                if (keyCode == 87) note = 14; // D 1
+                if (keyCode == 51) note = 15; // D#1
+                if (keyCode == 69) note = 16; // E 1
+                if (keyCode == 82) note = 17; // F 1
+                if (keyCode == 53) note = 18; // F#1
+                if (keyCode == 84) note = 19; // G 1
+                if (keyCode == 54) note = 20; // G#1
+                if (keyCode == 89) note = 21; // A 1
+                if (keyCode == 55) note = 22; // A#1
+                if (keyCode == 85) note = 23; // B 1
+                //-----------------------------------
+                if (keyCode == 73) note = 24; // C 2
+                if (keyCode == 57) note = 25; // C#2
+                if (keyCode == 79) note = 26; // D 2
+                if (keyCode == 48) note = 27; // D#2
+                if (keyCode == 80) note = 28; // E 2
+                if (keyCode == 219) note = 29; // F 2
+                if (keyCode == 187) note = 30; // F#2
+                if (keyCode == 221) note = 31; // G 2
+                //-----------------------------------
+    
+                if (note == -1) return -1;
+    
+                return ("_" + (note + controls.octave * 12));
+    
+            }
+    
+            window.onkeydown = function (ev) {
+                if (keys_down[ev.keyCode] != true) {
+                    var note = keyCode_to_note(ev.keyCode);
+                    if (note != -1) {
+                        key_status(note, keyState.note_on);
+                        keys_down[ev.keyCode] = true;
+    
+                        var delay = 0; // play one note every quarter second
+                        var note = parseInt(note.substr(1)) + 21; // the MIDI note
+                        var velocity = 127; // how hard the note hits
+                        MIDI.setVolume(0, 127);
+                        MIDI.noteOn(0, note, velocity, delay);
+                    }
+                }
+            }
+    
+            window.onkeyup = function (ev) {
+                if (keys_down[ev.keyCode] == true) {
+                    var note = keyCode_to_note(ev.keyCode);
+                    key_status(note, keyState.note_off);
+                    keys_down[ev.keyCode] = false;
+    
+                    var delay = 0; // play one note every quarter second
+                    var note = parseInt(note.substr(1)) + 21;
+                    var velocity = 127;// how hard the note hits
+                    MIDI.setVolume(0, 127);
+                    MIDI.noteOff(0, note, delay + 0.08);
+                }
+    
+            }
+    
+            window.onload = function () {
+                MIDI.loadPlugin(function () {
+                    //MIDI.Player.loadFile(song[0], MIDI.Player.start);
+                    MIDI.Player.timeWarp = 1.0; // speed the song is played back
+                    MIDI.Player.loadFile("./vendor/MIDI/midi/" + controls.song);
+    
+                    MIDI.Player.addListener(function (data) {
+                        var pianoKey = data.note - MIDI.pianoKeyOffset - 3;
+                        if (data.message === 144) {
+                            key_status("_" + pianoKey, keyState.note_on);
+                        }
+                        else {
+                            key_status("_" + pianoKey, keyState.note_off);
+                        }
+                    });
+    
+                    // Close the MIDI loader widget and open the GUI                                        
+                    MIDI.loader.stop();
+                    songsToFiles = {
+                        "Game Of Thrones Theme, Ramin Djawadi": "game_of_thrones.mid",
+                        "Mario Overworld Theme (Super Mario Bros 3), Koji Kondo": "mario_-_overworld_theme.mid",
+                        "He's a Pirate (Pirates of the Caribbean), Klaus Badelt": "hes_a_pirate.mid",
+                        "Hedwigs Theme (Harry Potter), John Williams": "hedwigs_theme.mid",
+                        "Something There (Beauty and the Beast), Alan Menken": "something_there.mid",
+                        "Cruel Angel Thesis (Neon Genesis Evangelion)": "cruel_angel__s_thesis.mid",
+                        "Me cuesta tanto olvidarte (Mecano)": "me_cuesta.mid",
+                        "Sonata No. 14 C# minor (Moonlight), Beethoven": "mond_1.mid",
+                        "For Elise, Beethoven": "for_elise_by_beethoven.mid",
+                        "Asturias (Leyenda), Albeniz": "alb_se5_format0.mid",
+                        "Aragon (Fantasia), Albeniz": "alb_se6.mid",
+                        "Prelude and Fugue in C major BWV 846, Bach": "bach_846.mid",
+                        "Fantasia C major, Schubert": "schub_d760_1.mid",
+                        "Sonata No. 16 C major, Mozart": "mz_545_1.mid",
+                        "Sonata No. 11 A major (K331, First Movement), Mozart": "mz_331_1.mid",
+                        "March - Song of the Lark, Tchaikovsky": "ty_maerz.mid",
+                        "Piano Sonata in C major, Hoboken, Haydn": "haydn_35_1.mid",
+                        "Etudes, Opus 25, Chopin": "chpn_op25_e1.mid",
+                        "Polonaise Ab major, Opus 53, Chopin": "chpn_op53.mid",
+                        "No. 2 - Oriental, Granados": "gra_esp_2.mid",
+                        "Bohemian Rhapsody, Queen": "bohemian1.mid",
+                    };
+                    var gui = new dat.GUI({ width: 625 });
+                    //gui.add(controls, 'key_attack_time', 2.0 , 40.0);
+                    //gui.add(controls, 'key_max_rotation',0.2 , 1.0);                             
+                    var song = gui.add(controls, 'song', songsToFiles);
+                    var noteOnColorControl = gui.addColor(controls, 'noteOnColor');
+                    noteOnColorControl.onChange(function (value) {
+                        noteOnColor = new THREE.Color().setRGB(controls.noteOnColor[0] / 256.0, controls.noteOnColor[1] / 256.0, controls.noteOnColor[2] / 256.0);;
+                    });
+    
+                    song.onChange(function (value) {
+                        MIDI.Player.stop();
+                        MIDI.Player.loadFile("./vendor/MIDI/midi/" + value, MIDI.Player.start);
+                    });
+    
+                    // make sure to remove any key pressed when changing the octave
+                    var octave = gui.add(controls, 'octave', 0, 4).step(1);
+                    octave.onChange(function (value) {
+                        for (keyCode in keys_down) {
+                            var note = keyCode_to_note(keyCode);
+                            key_status(note, keyState.note_off);
+                        }
+    
+                    });
+    
+                    gui.add(controls, 'play');
+                    gui.add(controls, 'stop');
+                });
+            };
+    
+            window.addEventListener('resize', on_window_resize, false);
+    
         </script>
     </body>
 </html>

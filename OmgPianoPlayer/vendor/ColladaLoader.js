@@ -1,3 +1,7 @@
+/**
+ * @author Tim Knip / http://www.floorplanner.com/ / tim at floorplanner.com
+ */
+
 THREE.ColladaLoader = function () {
 
 	var COLLADA = null;

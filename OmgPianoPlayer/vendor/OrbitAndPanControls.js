@@ -1,4 +1,13 @@
-
+/**
+ * @author qiao / https://github.com/qiao
+ * @author mrdoob / http://mrdoob.com
+ * @author alteredq / http://alteredqualia.com/
+ * @author WestLangley / https://github.com/WestLangley
+ * @author erich666 / http://erichaines.com
+ *
+ * Not quite correct: sort of assumes a 45 degree field of view.
+ * Currently uses distance to target for offsetting
+ */
 
 THREE.OrbitAndPanControls = function ( object, domElement ) {
 
