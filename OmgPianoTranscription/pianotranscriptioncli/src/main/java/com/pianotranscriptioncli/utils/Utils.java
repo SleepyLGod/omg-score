@@ -1,7 +1,9 @@
 package com.pianotranscriptioncli.utils;
 
+import ai.onnxruntime.OrtException;
 import libpianotranscription.Transcriptor;
 
+import javax.sound.midi.InvalidMidiDataException;
 import java.io.*;
 import java.nio.file.Files;
 
@@ -30,6 +32,10 @@ public class Utils {
         String outPutFilePath = resourcePath + "output\\" + songName + ".mid";
 
         preProcessFile(inputFilePath);
+        return getString(resourcePath, outPutFilePath);
+    }
+
+    private static String getString(String resourcePath, String outPutFilePath) throws IOException, OrtException, InvalidMidiDataException {
         byte[] a = Files.readAllBytes(new File("test.pcm").toPath());
         var b = Utils.normalizeShort(Utils.toShortLE(a));
         try {
@@ -52,27 +58,8 @@ public class Utils {
     }
 
     public static String ConvertorRedirect(String resourcePath, String songName, String outputPath) throws Exception {
-
         preProcessFile(resourcePath + "input\\" + songName + ".mp3");
-        byte[] a = Files.readAllBytes(new File("test.pcm").toPath());
-        var b = Utils.normalizeShort(Utils.toShortLE(a));
-        try {
-            var ans = new File("test.pcm").delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        var transcriptor = new Transcriptor(resourcePath + "transcription.onnx");
-        var out = transcriptor.transcript(b);
-        try(var file = new FileOutputStream(outputPath)) {
-            file.write(out);
-            System.out.println("OK");
-//            System.exit(0);
-            return outputPath;
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-        }
-        return null;
+        return getString(resourcePath, outputPath);
     }
 
     private static void preProcessFile(String fileName) throws Exception {
