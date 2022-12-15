@@ -8,10 +8,10 @@ Content-Type: multipart/form-data; boundary=WebAppBoundary
 Content-Disposition: form-data; name="file"; filename="雨的印记.mp3"
 
 < ./input/雨的印记.mp3
---WebAppBoundary--
-Content-Disposition: form-data; name="outPath"
-
-D:\\gitrepositories\\omg-score\\OmgPianoTranscription\\pianotranscriptioncli\\src\\main\\resources\\output\\
+#--WebAppBoundary--
+#Content-Disposition: form-data; name="outPath"
+#
+#D:\\gitrepositories\\omg-score\\OmgPianoTranscription\\pianotranscriptioncli\\src\\main\\resources\\output\\
 --WebAppBoundary--
 Content-Disposition: form-data; name="songName"
 
@@ -28,6 +28,7 @@ Content-Type: application/json
 {
     "isAbsolute": "false",
     "resourcePath": "\\pianotranscriptioncli\\src\\main\\resources\\",
+    "outPath": "D:\\gitrepositories\\omg-score\\OmgPianoTranscription\\pianotranscriptioncli\\src\\main\\resources\\output\\",
     "songName": "雨的印记"
 }
 

@@ -10,5 +10,7 @@ public class Mp3ImportDTO {
     @NonNull
     private String resourcePath;
     @NonNull
+    private String outPath;
+    @NonNull
     private String songName;
 }
