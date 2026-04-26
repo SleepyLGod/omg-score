@@ -103,6 +103,8 @@ celerybeat.pid
 
 # Environments
 .env
+.isolation/
+.DS_Store
 .venv
 env/
 venv/
@@ -183,3 +185,7 @@ fabric.properties
 # modules.xml
 
 *.onnx
+node_modules/
+*.pcm
+OmgPianoTranscription/pianotranscriptioncli/src/main/resources/output/
+OmgPianoTranscription/pianotranscriptioncli/runtime/

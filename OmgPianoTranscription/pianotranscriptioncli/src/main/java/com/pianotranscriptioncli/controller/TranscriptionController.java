@@ -2,18 +2,21 @@ package com.pianotranscriptioncli.controller;
 
 import com.pianotranscriptioncli.common.api.CommonResult;
 import com.pianotranscriptioncli.dto.Mp3ImportDTO;
-import com.pianotranscriptioncli.dto.Mp3ImportWithFileDTO;
 import com.pianotranscriptioncli.service.TranscriptionService;
-import com.pianotranscriptioncli.service.impl.TranscriptionServiceImpl;
 import com.pianotranscriptioncli.vo.Mp3ImportVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @RestController
 // @CrossOrigin(origins = "*", maxAge = 360000) // 不能和CorsConfig同时使用
@@ -22,6 +25,11 @@ public class TranscriptionController {
 
     @Autowired
     TranscriptionService transcriptionService;
+
+    @GetMapping(value = "/health")
+    public String health() {
+        return "ok";
+    }
 
     @PostMapping(value = "/fuck")
     public String Mp3TOMidiUpload() throws Exception {
@@ -46,22 +54,20 @@ public class TranscriptionController {
 
     @ResponseBody
     @PostMapping(value = "/mp3ToMidiWithFile", consumes = {"multipart/form-data"})
-    public void Mp3ToMidiWithFile(@RequestParam("file")MultipartFile file,
-                                  // @RequestParam("outPath")String outPath,
-                                  @RequestParam("songName")String songName,
-                                  HttpServletResponse response) throws Exception {
-        Mp3ImportWithFileDTO mp3ImportWithFileDTO = new Mp3ImportWithFileDTO(file, songName);
-        try {
-            CommonResult commonResult = transcriptionService.Mp3TOMidiUploadWithFile(mp3ImportWithFileDTO, response);
-            if (commonResult.getCode() == 1) {
-                System.out.println("success");
-            } else {
-                System.out.println("fail");
-            }
-        } catch (NullPointerException e) {
-            System.out.println("fail");
-            e.printStackTrace();
-        }
+    public ResponseEntity<Resource> Mp3ToMidiWithFile(@RequestParam("file") MultipartFile file,
+                                                      @RequestParam("songName") String songName) throws Exception {
+        Path midiPath = transcriptionService.Mp3TOMidiUploadWithFile(file, songName);
+        InputStreamResource resource = new InputStreamResource(Files.newInputStream(midiPath));
+        String downloadName = songName + ".mid";
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("audio/midi"))
+                .contentLength(Files.size(midiPath))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment()
+                                .filename(downloadName, StandardCharsets.UTF_8)
+                                .build()
+                                .toString())
+                .body(resource);
     }
 
 }

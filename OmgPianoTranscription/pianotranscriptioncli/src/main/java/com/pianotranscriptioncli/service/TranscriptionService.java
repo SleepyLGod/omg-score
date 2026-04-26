@@ -2,14 +2,14 @@ package com.pianotranscriptioncli.service;
 
 import com.pianotranscriptioncli.common.api.CommonResult;
 import com.pianotranscriptioncli.dto.Mp3ImportDTO;
-import com.pianotranscriptioncli.dto.Mp3ImportWithFileDTO;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
+import java.nio.file.Path;
 
 public interface TranscriptionService {
     CommonResult Mp3TOMidiUpload(Mp3ImportDTO mp3ImportDTO) throws Exception;
 
-    CommonResult Mp3TOMidiUploadWithFile(Mp3ImportWithFileDTO mp3ImportWithFileDTO, HttpServletResponse response) throws Exception;
+    Path Mp3TOMidiUploadWithFile(MultipartFile file, String songName) throws Exception;
 
     String WavToMidiUpload();
 }
