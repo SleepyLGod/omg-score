@@ -38,14 +38,113 @@
                 top: 0px; width: 100%;
                 padding: 5px;
             }
+            #upload-panel {
+                position: absolute;
+                z-index: 10;
+                left: 12px;
+                top: 12px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                padding: 8px;
+                background: rgba(255, 255, 255, 0.86);
+                border: 1px solid rgba(0, 0, 0, 0.12);
+                border-radius: 4px;
+                text-align: left;
+            }
+            #upload-panel input {
+                max-width: 220px;
+            }
+            #upload-panel button {
+                cursor: pointer;
+            }
+            #upload-panel button:disabled {
+                cursor: default;
+                opacity: 0.5;
+            }
+            #upload-status {
+                min-width: 96px;
+                color: #333;
+            }
             a {color: #1e83ff;}
         </style>    
     </head>
     <body>
-        <!--<input type="file" accept="mid">-->
+        <div id="upload-panel">
+            <input id="mp3-file" type="file" accept="audio/mpeg,.mp3">
+            <button id="convert-button" type="button" disabled>Convert</button>
+            <span id="upload-status"></span>
+        </div>
         <script type="text/javascript">
 
             MIDI.loader = new widgets.Loader({ message: "Loading: Soundfont..." }); 
+            var transcriptionApiUrl = window.OMG_TRANSCRIPTION_API_URL || "http://localhost:8084/transcription/mp3ToMidiWithFile";
+            var convertedMidiUrl = null;
+            var midiReady = false;
+            var uploadFileInput = document.getElementById("mp3-file");
+            var convertButton = document.getElementById("convert-button");
+            var uploadStatus = document.getElementById("upload-status");
+
+            function setUploadStatus(message) {
+                uploadStatus.textContent = message;
+            }
+
+            function updateUploadButton() {
+                convertButton.disabled = !midiReady || !uploadFileInput.files.length;
+            }
+
+            function songNameFromFile(file) {
+                return file.name.replace(/\.[^/.]+$/, "") || "upload";
+            }
+
+            function loadMidiFile(url, start) {
+                MIDI.Player.stop();
+                MIDI.Player.loadFile(url, start ? MIDI.Player.start : undefined);
+            }
+
+            function loadConvertedMidi(blob) {
+                if (convertedMidiUrl) {
+                    URL.revokeObjectURL(convertedMidiUrl);
+                }
+                convertedMidiUrl = URL.createObjectURL(blob);
+                loadMidiFile(convertedMidiUrl, true);
+            }
+
+            function responseError(response) {
+                return response.text().then(function (message) {
+                    message = message || response.statusText || "Request failed";
+                    throw new Error("HTTP " + response.status + ": " + message);
+                });
+            }
+
+            uploadFileInput.onchange = updateUploadButton;
+            convertButton.onclick = function () {
+                var file = uploadFileInput.files[0];
+                if (!file) return;
+
+                var formData = new FormData();
+                formData.append("file", file);
+                formData.append("songName", songNameFromFile(file));
+
+                convertButton.disabled = true;
+                setUploadStatus("Converting");
+
+                fetch(transcriptionApiUrl, {
+                    method: "POST",
+                    body: formData
+                }).then(function (response) {
+                    if (!response.ok) {
+                        return responseError(response);
+                    }
+                    return response.blob();
+                }).then(function (blob) {
+                    loadConvertedMidi(blob);
+                    setUploadStatus("Loaded");
+                }).catch(function (error) {
+                    console.error(error);
+                    setUploadStatus(error.message || "Failed");
+                }).finally(updateUploadButton);
+            };
     
             var scene = new THREE.Scene();
     
@@ -306,6 +405,8 @@
             window.onload = function () {
                 MIDI.loadPlugin(function () {
                     //MIDI.Player.loadFile(song[0], MIDI.Player.start);
+                    midiReady = true;
+                    updateUploadButton();
                     MIDI.Player.timeWarp = 1.0; // speed the song is played back
                     MIDI.Player.loadFile("./vendor/MIDI/midi/" + controls.song);
     
@@ -354,8 +455,7 @@
                     });
     
                     song.onChange(function (value) {
-                        MIDI.Player.stop();
-                        MIDI.Player.loadFile("./vendor/MIDI/midi/" + value, MIDI.Player.start);
+                        loadMidiFile("./vendor/MIDI/midi/" + value, true);
                     });
     
                     // make sure to remove any key pressed when changing the octave
