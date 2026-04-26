@@ -20,6 +20,42 @@
 git clone git@github.com:SleepyLGod/omg-score.git
 ```
 
+## 🧊 Isolated Docker run
+
+This path does not require installing Node, Java, Maven, or FFmpeg on the host.
+Runtime caches, the ONNX model, and generated files stay under `.isolation/`.
+
+```bash
+mkdir -p .isolation/models
+curl -L -o .isolation/models/transcription.onnx \
+  https://github.com/EveElseIf/pianotranscription_java/releases/download/blob/transcription.onnx
+docker compose up --build
+```
+
+Open the 3D piano frontend at:
+
+```text
+http://localhost:8080
+```
+
+The transcription backend listens on:
+
+```text
+http://localhost:8084
+```
+
+The MP3 upload flow uses `POST /transcription/mp3ToMidiWithFile` and returns the
+generated MIDI file directly to the browser.
+
+Stop the isolated services with:
+
+```bash
+docker compose down
+```
+
+If conversion fails with a missing model error, confirm that
+`.isolation/models/transcription.onnx` exists before starting Compose.
+
 ## ⚙ Basic
 + The project is divided into 3 parts.
 + The [OmgSimplePlayer](./OmgSimplePlayer/) is the web applet to play standard midi files, and you can change the tempo.

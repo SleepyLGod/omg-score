@@ -1,0 +1,7 @@
+.git/
+.isolation/
+**/node_modules/
+**/target/
+**/build/
+**/dist/
+*.log
