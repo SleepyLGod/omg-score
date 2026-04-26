@@ -1,8 +1,5 @@
 package com.pianotranscriptioncli.common.api;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,8 +7,6 @@ import java.util.Map;
  * 通用返回对象
  *
  */
-@Getter
-@Setter
 public class CommonResult {
     private long code;
     private String message;
@@ -23,6 +18,30 @@ public class CommonResult {
     protected CommonResult(long code, String message, Object data) {
         this.code = code;
         this.message = message;
+        this.data = data;
+    }
+
+    public long getCode() {
+        return code;
+    }
+
+    public void setCode(long code) {
+        this.code = code;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public void setData(Object data) {
         this.data = data;
     }
 

@@ -28,7 +28,10 @@ public class Transcriptor {
     }
 
     public byte[] transcript(float[] pcm_data) throws InvalidMidiDataException, IOException, OrtException {
-        int pad_len = (int) (Math.ceil(pcm_data.length / segment_samples)) * segment_samples - pcm_data.length;
+        if (pcm_data.length == 0) {
+            throw new IllegalArgumentException("PCM data is empty");
+        }
+        int pad_len = (int) (Math.ceil((double) pcm_data.length / segment_samples)) * segment_samples - pcm_data.length;
         if (pad_len != 0)
             pcm_data = Arrays.copyOf(pcm_data, pcm_data.length + pad_len);
         /*复制指定的数组，用零截断或填充（如有必要），以便副本具有指定的长度。

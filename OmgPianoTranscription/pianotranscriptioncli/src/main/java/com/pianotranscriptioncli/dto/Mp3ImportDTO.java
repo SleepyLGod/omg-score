@@ -1,16 +1,40 @@
 package com.pianotranscriptioncli.dto;
 
-import lombok.Data;
-import lombok.NonNull;
-
-@Data
 public class Mp3ImportDTO {
-    @NonNull
     private boolean isAbsolute;
-    @NonNull
     private String resourcePath;
-    @NonNull
     private String outPath;
-    @NonNull
     private String songName;
+
+    public boolean isAbsolute() {
+        return isAbsolute;
+    }
+
+    public void setAbsolute(boolean absolute) {
+        isAbsolute = absolute;
+    }
+
+    public String getResourcePath() {
+        return resourcePath;
+    }
+
+    public void setResourcePath(String resourcePath) {
+        this.resourcePath = resourcePath;
+    }
+
+    public String getOutPath() {
+        return outPath;
+    }
+
+    public void setOutPath(String outPath) {
+        this.outPath = outPath;
+    }
+
+    public String getSongName() {
+        return songName;
+    }
+
+    public void setSongName(String songName) {
+        this.songName = songName;
+    }
 }

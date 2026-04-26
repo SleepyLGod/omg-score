@@ -6,6 +6,7 @@ import libpianotranscription.Transcriptor;
 import javax.sound.midi.InvalidMidiDataException;
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class Utils {
     public static short[] toShortLE(byte[] bytes) {
@@ -27,30 +28,26 @@ public class Utils {
     }
 
     public static String Convertor(String resourcePath, String songName) throws Exception {
-
-        String inputFilePath = resourcePath + "input\\" + songName + ".mp3";
-        String outPutFilePath = resourcePath + "output\\" + songName + ".mid";
-
-        preProcessFile(inputFilePath);
-        return getString(resourcePath, outPutFilePath);
+        Path root = Path.of(resourcePath);
+        Path inputFilePath = root.resolve("input").resolve(songName + ".mp3");
+        Path outPutFilePath = root.resolve("output").resolve(songName + ".mid");
+        return convertMp3ToMidi(inputFilePath, outPutFilePath, root.resolve("transcription.onnx"), root);
     }
 
-    private static String getString(String resourcePath, String outPutFilePath) throws IOException, OrtException, InvalidMidiDataException {
-        byte[] a = Files.readAllBytes(new File("test.pcm").toPath());
+    private static String getString(Path modelPath, Path outPutFilePath, Path pcmPath) throws IOException, OrtException, InvalidMidiDataException {
+        byte[] a = Files.readAllBytes(pcmPath);
         var b = Utils.normalizeShort(Utils.toShortLE(a));
-        try {
-            var ans = new File("test.pcm").delete();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        var transcriptor = new Transcriptor(resourcePath + "transcription.onnx");
+        var transcriptor = new Transcriptor(modelPath.toString());
         var out = transcriptor.transcript(b);
-        try(var file = new FileOutputStream(outPutFilePath)) {
+        if (outPutFilePath.getParent() != null) {
+            Files.createDirectories(outPutFilePath.getParent());
+        }
+        try(var file = new FileOutputStream(outPutFilePath.toFile())) {
             file.write(out);
             System.out.println("OK");
 //            System.exit(0);
-            return outPutFilePath;
+            return outPutFilePath.toString();
         } catch (FileNotFoundException e1) {
             e1.printStackTrace();
         }
@@ -58,14 +55,26 @@ public class Utils {
     }
 
     public static String ConvertorRedirect(String resourcePath, String songName, String outputPath) throws Exception {
-        preProcessFile(resourcePath + "input\\" + songName + ".mp3");
-        return getString(resourcePath, outputPath);
+        Path root = Path.of(resourcePath);
+        Path inputFilePath = root.resolve("input").resolve(songName + ".mp3");
+        return convertMp3ToMidi(inputFilePath, Path.of(outputPath), root.resolve("transcription.onnx"), root);
     }
 
-    private static void preProcessFile(String fileName) throws Exception {
-        String[] cmd = {"ffmpeg", "-i", fileName, "-ac", "1", "-ar", "16000", "-f", "s16le", "test.pcm", "-y"};
-        var process = Runtime.getRuntime().exec(cmd); // 调用命令行
-        var is = process.getErrorStream();
+    public static String convertMp3ToMidi(Path inputFile, Path outputFile, Path modelPath, Path workDir) throws Exception {
+        Files.createDirectories(workDir);
+        Path pcmPath = Files.createTempFile(workDir, "omg-transcription-", ".pcm");
+        try {
+            preProcessFile(inputFile, pcmPath);
+            return getString(modelPath, outputFile, pcmPath);
+        } finally {
+            Files.deleteIfExists(pcmPath);
+        }
+    }
+
+    private static void preProcessFile(Path fileName, Path pcmPath) throws Exception {
+        String[] cmd = {"ffmpeg", "-i", fileName.toString(), "-ac", "1", "-ar", "16000", "-f", "s16le", pcmPath.toString(), "-y"};
+        var process = new ProcessBuilder(cmd).redirectErrorStream(true).start();
+        var is = process.getInputStream();
         var isr = new InputStreamReader(is);
         var br = new BufferedReader(isr);
         String line = br.readLine();
@@ -73,8 +82,9 @@ public class Utils {
             System.out.println(line);
             line = br.readLine();
         }
-        process.waitFor();
-        var file = new File("test.pcm");
-        if (!file.exists()) throw new Exception("ffmpeg execute failed, check if the input file does not exist");
+        int exitCode = process.waitFor();
+        if (exitCode != 0 || !Files.exists(pcmPath)) {
+            throw new Exception("ffmpeg execute failed, check if the input file does not exist");
+        }
     }
 }
