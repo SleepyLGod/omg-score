@@ -20,6 +20,18 @@
 git clone git@github.com:SleepyLGod/omg-score.git
 ```
 
+## 🌐 GitHub Pages demo
+
+The 3D piano player can be hosted as a static GitHub Pages site:
+
+```text
+https://sleepylgod.github.io/omg-score/
+```
+
+GitHub Pages only serves the browser frontend. Built-in MIDI playback and the
+3D piano view work there, but MP3-to-MIDI conversion still requires the Docker
+backend below or another deployed backend.
+
 ## 🧊 Isolated Docker run
 
 This path does not require installing Node, Java, Maven, or FFmpeg on the host.
@@ -68,7 +80,7 @@ If conversion fails with a missing model error, confirm that
 - [x] Play all kinds of standard midi files in the web page simply.
 - [x] Change the song tempo in the simple player.
 - [x] Play midi files(piano pieces) in the web page dynamically.
-- [ ] Change the song tempo in the dynamic player.
+- [x] Change the song tempo in the dynamic player.
 - [ ] Play midi files of various musical instruments in the web page dynamically.
 - [ ] Modify the converting and transmitting speed.
 
