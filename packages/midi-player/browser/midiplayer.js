@@ -37,7 +37,7 @@ var MidiPlayer = (function () {
   }
 
   /**
-   * Constants used in player.
+   * Contains constants used in player.
    */
   var Constants = {
     VERSION: '2.0.16',
@@ -65,6 +65,7 @@ var MidiPlayer = (function () {
 
   /**
    * Contains misc static utility methods.
+   * @class Static utility methods.
    */
   var Utils = /*#__PURE__*/function () {
     function Utils() {
@@ -147,7 +148,9 @@ var MidiPlayer = (function () {
         return (dec >>> 0).toString(2);
       }
       /**
-       * Determines the length in bytes of a variable length quaantity.  The first byte in given range is assumed to be beginning of var length quantity.
+       * Determines the length in bytes of a variable length quaantity.  
+       * The first byte in given range is assumed to be beginning of var length quantity.
+       * Reference: http://www.ccarh.org/courses/253/handout/vlv/
        * @param {array} byteArray
        * @return {number}
        */
@@ -156,9 +159,7 @@ var MidiPlayer = (function () {
       key: "getVarIntLength",
       value: function getVarIntLength(byteArray) {
         // Get byte count of delta VLV
-        // http://www.ccarh.org/courses/253/handout/vlv/
-        // If byte is greater or equal to 80h (128 decimal) then the next byte
-        // is also part of the VLV,
+        // If byte is greater or equal to 80h (128 decimal) then the next byte is also part of the VLV,
         // else byte is the last byte in a VLV.
         var currentByte = byteArray[0];
         var byteCount = 1;
@@ -187,7 +188,7 @@ var MidiPlayer = (function () {
             result += b & 0x7f;
             result <<= 7;
           } else {
-            /* b is the last byte */
+            // b is the last byte
             result += b;
           }
         });
@@ -212,7 +213,10 @@ var MidiPlayer = (function () {
 
         return atob;
       }(function (string) {
-        if (typeof atob === 'function') return atob(string);
+        if (typeof atob === 'function') {
+          return atob(string);
+        }
+
         return Buffer.from(string, 'base64').toString('binary');
       })
     }]);
@@ -221,7 +225,8 @@ var MidiPlayer = (function () {
   }();
 
   /**
-   * Class representing a track.  Contains methods for parsing events and keeping track of pointer.
+   * Contains methods for parsing events and keeping track of pointer.
+   * @Class Representing a track.
    */
 
   var Track = /*#__PURE__*/function () {
@@ -352,13 +357,19 @@ var MidiPlayer = (function () {
           if (this.pointer < this.data.length && (dryRun || eventReady)) {
             var _event = this.parseEvent();
 
-            if (this.enabled) return _event; // Recursively call this function for each event ahead that has 0 delta time?
+            if (this.enabled) {
+              return _event;
+            } // Recursively call this function for each event ahead that has 0 delta time?
+
           }
         } else {
           // Let's actually play the MIDI from the generated JSON events created by the dry run.
           if (this.events[this.eventIndex] && this.events[this.eventIndex].tick <= currentTick) {
             this.eventIndex++;
-            if (this.enabled) return this.events[this.eventIndex - 1];
+
+            if (this.enabled) {
+              return this.events[this.eventIndex - 1];
+            }
           }
         }
 
@@ -706,7 +717,10 @@ var MidiPlayer = (function () {
       this.events = [];
       this.totalEvents = 0;
       this.eventListeners = {};
-      if (typeof eventHandler === 'function') this.on('midiEvent', eventHandler);
+
+      if (typeof eventHandler === 'function') {
+        this.on('midiEvent', eventHandler);
+      }
     }
     /**
      * Load a file into the player (Node.js only).
@@ -956,10 +970,16 @@ var MidiPlayer = (function () {
     }, {
       key: "play",
       value: function play() {
-        if (this.isPlaying()) throw 'Already playing...'; // Initialize
+        if (this.isPlaying()) {
+          throw 'Already playing...';
+        } // Initialize
 
-        if (!this.startTime) this.startTime = new Date().getTime(); // Start play loop
+
+        if (!this.startTime) {
+          this.startTime = new Date().getTime();
+        } // Start play loop
         //window.requestAnimationFrame(this.playLoop.bind(this));
+
 
         this.setIntervalId = setInterval(this.playLoop.bind(this), this.sampleRate); //this.setIntervalId = this.loop();
 
@@ -1031,7 +1051,10 @@ var MidiPlayer = (function () {
     }, {
       key: "skipToPercent",
       value: function skipToPercent(percent) {
-        if (percent < 0 || percent > 100) throw "Percent must be number between 1 and 100.";
+        if (percent < 0 || percent > 100) {
+          throw "Percent must be number between 1 and 100.";
+        }
+
         this.skipToTick(Math.round(percent / 100 * this.totalTicks));
         return this;
       }
@@ -1045,7 +1068,11 @@ var MidiPlayer = (function () {
       key: "skipToSeconds",
       value: function skipToSeconds(seconds) {
         var songTime = this.getSongTime();
-        if (seconds < 0 || seconds > songTime) throw seconds + " seconds not within song time of " + songTime;
+
+        if (seconds < 0 || seconds > songTime) {
+          throw seconds + " seconds not within song time of " + songTime;
+        }
+
         this.skipToPercent(seconds / songTime * 100);
         return this;
       }
@@ -1060,7 +1087,8 @@ var MidiPlayer = (function () {
         return this.setIntervalId > 0 || _typeof(this.setIntervalId) === 'object';
       }
       /**
-       * Plays the loaded MIDI file without regard for timing and saves events in this.events.  Essentially used as a parser.
+       * Plays the loaded MIDI file without regard for timing and saves events in this.events.  
+       * Essentially used as a parser.
        * @return {Player}
        */
 
@@ -1071,7 +1099,8 @@ var MidiPlayer = (function () {
         this.resetTracks();
 
         while (!this.endOfFile()) {
-          this.playLoop(true); //console.log(this.bytesProcessed(), this.midiChunksByteLength);
+          this.playLoop(true);
+          console.log(this.bytesProcessed(), this.midiChunksByteLength);
         }
 
         this.events = this.getEvents();
@@ -1080,8 +1109,8 @@ var MidiPlayer = (function () {
         this.startTick = 0;
         this.startTime = 0; // Leave tracks in pristine condish
 
-        this.resetTracks(); //console.log('Song time: ' + this.getSongTime() + ' seconds / ' + this.totalTicks + ' ticks.');
-
+        this.resetTracks();
+        console.log('Song time: ' + this.getSongTime() + ' seconds / ' + this.totalTicks + ' ticks.');
         this.triggerPlayerEvent('fileLoaded', this);
         return this;
       }
@@ -1229,7 +1258,10 @@ var MidiPlayer = (function () {
     }, {
       key: "getCurrentTick",
       value: function getCurrentTick() {
-        if (!this.startTime) return this.startTick;
+        if (!this.startTime) {
+          return this.startTick;
+        }
+
         return Math.round((new Date().getTime() - this.startTime) / 1000 * (this.division * (this.tempo / 60))) + this.startTick;
       }
       /**
@@ -1254,7 +1286,10 @@ var MidiPlayer = (function () {
     }, {
       key: "on",
       value: function on(playerEvent, fn) {
-        if (!this.eventListeners.hasOwnProperty(playerEvent)) this.eventListeners[playerEvent] = [];
+        if (!this.eventListeners.hasOwnProperty(playerEvent)) {
+          this.eventListeners[playerEvent] = [];
+        }
+
         this.eventListeners[playerEvent].push(fn);
         return this;
       }
@@ -1268,15 +1303,23 @@ var MidiPlayer = (function () {
     }, {
       key: "triggerPlayerEvent",
       value: function triggerPlayerEvent(playerEvent, data) {
-        if (this.eventListeners.hasOwnProperty(playerEvent)) this.eventListeners[playerEvent].forEach(function (fn) {
-          return fn(data || {});
-        });
+        if (this.eventListeners.hasOwnProperty(playerEvent)) {
+          this.eventListeners[playerEvent].forEach(function (fn) {
+            return fn(data || {});
+          });
+        }
+
         return this;
       }
     }]);
 
     return Player;
   }();
+
+  /**
+   * @class Index
+   * @description The main class for the application.
+   */
 
   var index = {
     Player: Player,

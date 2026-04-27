@@ -187,5 +187,5 @@ fabric.properties
 *.onnx
 node_modules/
 *.pcm
-OmgPianoTranscription/pianotranscriptioncli/src/main/resources/output/
-OmgPianoTranscription/pianotranscriptioncli/runtime/
+apps/transcription-api/pianotranscriptioncli/src/main/resources/output/
+apps/transcription-api/pianotranscriptioncli/runtime/

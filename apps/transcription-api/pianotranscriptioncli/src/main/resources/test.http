@@ -1,0 +1,28 @@
+# Local API smoke requests. Set host to http://localhost:8084/transcription.
+
+###
+POST {{host}}/audioToMidiWithFile
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="雨的印记.mp3"
+
+< ./input/雨的印记.mp3
+--WebAppBoundary
+Content-Disposition: form-data; name="songName"
+
+雨的印记
+--WebAppBoundary--
+
+###
+POST {{host}}/mp3ToMidi
+Content-Type: application/json
+
+{
+    "isAbsolute": "false",
+    "resourcePath": "./pianotranscriptioncli/src/main/resources/",
+    "outPath": "./runtime/output/",
+    "songName": "雨的印记"
+}
+
+###

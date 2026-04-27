@@ -15,6 +15,8 @@
   </p>
 </div>  
 
+![OMG Score piano player demo](./docs/assets/demo.png)
+
 ## ⚡ Quick setup
 ```bash
 git clone git@github.com:SleepyLGod/omg-score.git
@@ -22,15 +24,16 @@ git clone git@github.com:SleepyLGod/omg-score.git
 
 ## 🌐 GitHub Pages demo
 
-The 3D piano player can be hosted as a static GitHub Pages site:
+The 3D piano player in [`apps/piano-player`](./apps/piano-player/) can be
+hosted as a static GitHub Pages site:
 
 ```text
 https://sleepylgod.github.io/omg-score/
 ```
 
-GitHub Pages only serves the browser frontend. Built-in MIDI playback and the
-3D piano view work there, but audio-to-MIDI conversion still requires the Docker
-backend below or another deployed backend.
+GitHub Pages only serves the browser frontend. Built-in MIDI playback, the
+interactive keyboard, and the 3D piano view work there, but audio-to-MIDI
+conversion still requires the Docker backend below or another deployed backend.
 
 ## 🧊 Isolated Docker run
 
@@ -69,9 +72,18 @@ If conversion fails with a missing model error, confirm that
 `.isolation/models/transcription.onnx` exists before starting Compose.
 
 ## ⚙ Basic
-+ The project is divided into 3 parts.
-+ The [OmgSimplePlayer](./OmgSimplePlayer/) is the web applet to play standard midi files, and you can change the tempo.
-+ The [OmgPianoPlayer](./OmgPianoPlayer) and [OmgPianoTranscription](./OmgPianoTranscription) is the web applet to convert audio files to midi files of piano pieces, and play them dynamically. The former is the frontend and the latter is the backend. You can see a three-dimensional piano model and adjust its spatial position freely. When the piano is being played, you can see the keys move with the notes, and you can also download the converted midi files and use them for other playback editors and editors.
+
+This repository is organized as a small monorepo:
+
+- [`apps/piano-player`](./apps/piano-player/) is the static browser frontend. It
+  loads MIDI files, displays an interactive 3D piano, lets you play with mouse,
+  touch, or keyboard input, and can call the transcription backend when one is
+  available.
+- [`apps/transcription-api`](./apps/transcription-api/) is the Spring Boot
+  backend. It wraps the piano transcription model, accepts MP3/WAV uploads, and
+  returns generated MIDI files.
+- [`packages/midi-player`](./packages/midi-player/) is the standalone JavaScript
+  MIDI parser/player package used for standard MIDI playback and tempo control.
 
 ## 🔨 Tasks
 - [x] Convert mp3 files to standard midi files.
@@ -88,7 +100,7 @@ If conversion fails with a missing model error, confirm that
 + Three.js
 + MIDI.js
 + Piano transcription inference
-+ Maven & springboot
++ Maven & Spring Boot
 
 ## 🙋‍♂️ Support
 💙 If you like this project, give it a ⭐ and share it with friends!

@@ -26,8 +26,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: OmgSimplePlayer/package-lock.json
+        cache-dependency-path: packages/midi-player/package-lock.json
     - run: npm ci
-      working-directory: OmgSimplePlayer
+      working-directory: packages/midi-player
     - run: npm test
-      working-directory: OmgSimplePlayer
+      working-directory: packages/midi-player

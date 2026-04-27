@@ -1,12 +1,22 @@
-<h3 align="center">
-    <img src="https://readme-typing-svg.herokuapp.com/?font=Roboto+Mono&size=25&width=350&color=46BEA3duration=1600&lines=🎵Omg+Simple+Player🎶" height="80"/></br>
-    A JS applet reading standard MIDI files, emits JSON events in real time and plays them in the browser.
-</h3>
+# MIDI Player Package
+
+A JavaScript MIDI parser/player package. It reads standard MIDI files, emits
+JSON events in real time, and can be used by browser or Node-based players.
+
+This package lives at `packages/midi-player` inside the OMG Score repository.
+
+## Development
+
+```bash
+cd packages/midi-player
+npm ci
+npm test
+```
 
 ## ⚡ Getting Started
 Create a new player by instantiating `MidiPlayer.Player` with an event handler to be called for every MIDI event, then you can load and play a MIDI file.
 
-Using MidiWriterJS is pretty simple.
+Using the player is pretty simple.
 
 ```javascript
 const MidiPlayer = require('midi-player-js');

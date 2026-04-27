@@ -3,18 +3,18 @@ services:
     platform: linux/amd64
     build:
       context: .
-      dockerfile: OmgPianoTranscription/Dockerfile
+      dockerfile: apps/transcription-api/Dockerfile
     environment:
       OMG_TRANSCRIPTION_MODEL_PATH: /workspace/.models/transcription.onnx
       OMG_TRANSCRIPTION_WORK_DIR: /workspace/.runtime
     ports:
       - "8084:8084"
     volumes:
-      - ./OmgPianoTranscription:/workspace/OmgPianoTranscription
+      - ./apps/transcription-api:/workspace/apps/transcription-api
       - ./.isolation/m2:/root/.m2/repository
       - ./.isolation/models:/workspace/.models
       - ./.isolation/backend-workspace:/workspace/.runtime
-    working_dir: /workspace/OmgPianoTranscription
+    working_dir: /workspace/apps/transcription-api
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8084/transcription/health"]
       interval: 10s
@@ -24,7 +24,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: OmgPianoPlayer/Dockerfile
+      dockerfile: apps/piano-player/Dockerfile
     ports:
       - "8080:80"
     depends_on:
