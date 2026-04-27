@@ -1,44 +1,58 @@
-<h3 align="center">
-    <img src="https://readme-typing-svg.herokuapp.com/?font=Roboto+Mono&size=25&width=240&color=46BEA3duration=1600&lines=🎵Omg+Player🎶" height="80"/></br>
-    <font>✨ Transferring piano pieces and playing them dynamically in the browser. 🌠</font>
-</h3>
+# OMG Score
 
-<div align="center">
-  <p>
-    <!-- ?style=flat-square -->
-    <a href="#"><img src="https://custom-icon-badges.herokuapp.com/github/last-commit/SleepyLGod/omg-score" alt="omg-score"/></a>
-    <a href="#"><img src="https://img.shields.io/badge/all_contributors-0x4-orange.svg" alt="omg-score"/></a>
-    <a href="#"><img src="https://circleci.com/gh/codesandbox/codesandbox-client.svg?style=svg" alt="omg-score"/></a>
-    <a href="#"><img src="https://www.browserstack.com/automate/badge.svg" alt="omg-score"/></a>
-    <a href="#"><img src="https://img.shields.io/badge/PRs-welcome-gold.svg" alt="omg-score"/></a>
-    <a href="#"><img src="https://img.shields.io/badge/first--timers--only-friendly-blue.svg" alt="omg-score"/></a>
-  </p>
-</div>  
+<p align="center">
+  <strong>Convert piano audio to MIDI, then play it back in an interactive browser piano studio.</strong>
+</p>
 
-![OMG Score piano player demo](./docs/assets/demo.png)
+<p align="center">
+  <a href="https://github.com/SleepyLGod/omg-score/actions/workflows/blank.yml"><img src="https://github.com/SleepyLGod/omg-score/actions/workflows/blank.yml/badge.svg" alt="Node.js CI"></a>
+  <a href="https://github.com/SleepyLGod/omg-score/actions/workflows/pages.yml"><img src="https://github.com/SleepyLGod/omg-score/actions/workflows/pages.yml/badge.svg" alt="GitHub Pages"></a>
+  <a href="https://github.com/SleepyLGod/omg-score/commits/main"><img src="https://img.shields.io/github/last-commit/SleepyLGod/omg-score" alt="Last commit"></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MPL--2.0-blue" alt="License: MPL 2.0"></a>
+</p>
 
-## ⚡ Quick setup
-```bash
-git clone git@github.com:SleepyLGod/omg-score.git
+<p align="center">
+  <img src="./docs/assets/demo.png" alt="OMG Score piano player demo">
+</p>
+
+## Overview
+
+OMG Score is a browser-based piano workflow:
+
+- Upload MP3/WAV piano audio and convert it to a standard MIDI file.
+- Play MIDI files in a 3D piano scene with animated keys.
+- Perform notes directly with mouse, touch, or keyboard input.
+- Run the full stack locally through Docker without installing Node, Java,
+  Maven, or FFmpeg on the host.
+
+The static frontend can also be deployed to GitHub Pages. Static hosting supports
+MIDI playback and the 3D piano UI; audio-to-MIDI conversion still requires the
+backend API.
+
+## Repository Layout
+
+```text
+apps/
+  piano-player/       Static 3D piano frontend
+  transcription-api/  Spring Boot audio-to-MIDI backend
+packages/
+  midi-player/        JavaScript MIDI parser/player package
+docs/
+  assets/             README and documentation images
 ```
 
-## 🌐 GitHub Pages demo
-
-The 3D piano player in [`apps/piano-player`](./apps/piano-player/) can be
-hosted as a static GitHub Pages site:
+## GitHub Pages Demo
 
 ```text
 https://sleepylgod.github.io/omg-score/
 ```
 
-GitHub Pages only serves the browser frontend. Built-in MIDI playback, the
-interactive keyboard, and the 3D piano view work there, but audio-to-MIDI
-conversion still requires the Docker backend below or another deployed backend.
+The Pages workflow publishes [`apps/piano-player`](./apps/piano-player/).
 
-## 🧊 Isolated Docker run
+## Isolated Local Run
 
-This path does not require installing Node, Java, Maven, or FFmpeg on the host.
-Runtime caches, the ONNX model, and generated files stay under `.isolation/`.
+This is the recommended development path. Runtime caches, the ONNX model, and
+generated files stay under `.isolation/`.
 
 ```bash
 mkdir -p .isolation/models
@@ -47,22 +61,19 @@ curl -L -o .isolation/models/transcription.onnx \
 docker compose up --build
 ```
 
-Open the 3D piano frontend at:
+Open the frontend:
 
 ```text
 http://localhost:8080
 ```
 
-The transcription backend listens on:
+The backend API listens on:
 
 ```text
 http://localhost:8084
 ```
 
-The audio upload flow uses `POST /transcription/audioToMidiWithFile` and returns the
-generated MIDI file directly to the browser.
-
-Stop the isolated services with:
+Stop the services:
 
 ```bash
 docker compose down
@@ -71,36 +82,30 @@ docker compose down
 If conversion fails with a missing model error, confirm that
 `.isolation/models/transcription.onnx` exists before starting Compose.
 
-## ⚙ Basic
+## API
 
-This repository is organized as a small monorepo:
+- `GET /transcription/health` returns backend health.
+- `POST /transcription/audioToMidiWithFile` accepts `multipart/form-data` with
+  an MP3 or WAV `file` field and returns a generated `.mid` file.
+- `POST /transcription/mp3ToMidiWithFile` is kept as a compatibility alias.
 
-- [`apps/piano-player`](./apps/piano-player/) is the static browser frontend. It
-  loads MIDI files, displays an interactive 3D piano, lets you play with mouse,
-  touch, or keyboard input, and can call the transcription backend when one is
-  available.
-- [`apps/transcription-api`](./apps/transcription-api/) is the Spring Boot
-  backend. It wraps the piano transcription model, accepts MP3/WAV uploads, and
-  returns generated MIDI files.
-- [`packages/midi-player`](./packages/midi-player/) is the standalone JavaScript
-  MIDI parser/player package used for standard MIDI playback and tempo control.
+## Roadmap
 
-## 🔨 Tasks
-- [x] Convert mp3 files to standard midi files.
-- [x] Convert songs and pieces in other formats like wav to standard midi files.
-- [x] Choose and upload local files freely.
-- [x] Play all kinds of standard midi files in the web page simply.
-- [x] Change the song tempo in the simple player.
-- [x] Play midi files(piano pieces) in the web page dynamically.
-- [x] Change the song tempo in the dynamic player.
-- [ ] Play midi files of various musical instruments in the web page dynamically.
-- [ ] Modify the converting and transmitting speed.
+- [x] Convert MP3 files to standard MIDI files.
+- [x] Convert WAV files to standard MIDI files.
+- [x] Upload local audio files freely.
+- [x] Play standard MIDI files in the browser.
+- [x] Change playback tempo in the MIDI player.
+- [x] Animate piano keys during MIDI playback.
+- [x] Support interactive mouse, touch, and keyboard performance input.
+- [ ] Improve conversion speed and request feedback during long-running jobs.
+- [ ] Explore dynamic playback for non-piano instruments.
 
-## 🔪 Tools
-+ Three.js
-+ MIDI.js
-+ Piano transcription inference
-+ Maven & Spring Boot
+## Tech Stack
 
-## 🙋‍♂️ Support
-💙 If you like this project, give it a ⭐ and share it with friends!
+- Three.js
+- MIDI.js
+- Spring Boot
+- Maven
+- FFmpeg
+- Piano transcription ONNX model
