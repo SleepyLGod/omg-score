@@ -71,19 +71,19 @@
     </head>
     <body>
         <div id="upload-panel">
-            <input id="mp3-file" type="file" accept="audio/mpeg,.mp3">
+            <input id="audio-file" type="file" accept="audio/mpeg,audio/wav,audio/x-wav,.mp3,.wav">
             <button id="convert-button" type="button" disabled>Convert</button>
             <span id="upload-status"></span>
         </div>
         <script type="text/javascript">
 
             MIDI.loader = new widgets.Loader({ message: "Loading: Soundfont..." }); 
-            var localTranscriptionApiUrl = "http://localhost:8084/transcription/mp3ToMidiWithFile";
+            var localTranscriptionApiUrl = "http://localhost:8084/transcription/audioToMidiWithFile";
             var transcriptionApiUrl = window.OMG_TRANSCRIPTION_API_URL || defaultTranscriptionApiUrl();
             var activeMidiUrl = null;
             var convertedMidiUrl = null;
             var midiReady = false;
-            var uploadFileInput = document.getElementById("mp3-file");
+            var uploadFileInput = document.getElementById("audio-file");
             var convertButton = document.getElementById("convert-button");
             var uploadStatus = document.getElementById("upload-status");
 

@@ -12,6 +12,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Locale;
 
 @Service
 public class TranscriptionServiceImpl implements TranscriptionService {
@@ -41,15 +42,20 @@ public class TranscriptionServiceImpl implements TranscriptionService {
 
     /**
      * 上传文件
-     * @param file 上传的mp3文件
+     * @param file 上传的音频文件
      * @param songName 歌曲名
      * @return Path
      * @throws Exception
      */
     @Override
     public Path Mp3TOMidiUploadWithFile(MultipartFile file, String songName) throws Exception {
+        return AudioTOMidiUploadWithFile(file, songName);
+    }
+
+    @Override
+    public Path AudioTOMidiUploadWithFile(MultipartFile file, String songName) throws Exception {
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("mp3文件不能为空");
+            throw new IllegalArgumentException("音频文件不能为空");
         }
 
         Path model = Path.of(modelPath);
@@ -58,6 +64,7 @@ public class TranscriptionServiceImpl implements TranscriptionService {
         }
 
         String safeSongName = sanitizeSongName(songName);
+        String extension = audioExtension(file);
         Path root = Path.of(workDir);
         Path inputDir = root.resolve("input");
         Path outputDir = root.resolve("output");
@@ -65,16 +72,16 @@ public class TranscriptionServiceImpl implements TranscriptionService {
         Files.createDirectories(inputDir);
         Files.createDirectories(outputDir);
 
-        Path inputFile = inputDir.resolve(safeSongName + ".mp3");
+        Path inputFile = inputDir.resolve(safeSongName + "." + extension);
         Path outputFile = outputDir.resolve(safeSongName + ".mid");
         try (InputStream inputStream = file.getInputStream()) {
             Files.copy(inputStream, inputFile, StandardCopyOption.REPLACE_EXISTING);
         }
-        System.out.println("mp3文件存入成功!");
+        System.out.println("音频文件存入成功!");
 
-        String output = Utils.convertMp3ToMidi(inputFile, outputFile, model, tmpDir);
+        String output = Utils.convertAudioToMidi(inputFile, outputFile, model, tmpDir);
         if (output == null) {
-            throw new IOException("mp3转换失败");
+            throw new IOException("音频转换失败");
         }
         return Path.of(output);
     }
@@ -104,5 +111,37 @@ public class TranscriptionServiceImpl implements TranscriptionService {
         }
         return safeSongName;
     }
-}
 
+    private String audioExtension(MultipartFile file) {
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null) {
+            int dotIndex = originalFilename.lastIndexOf('.');
+            if (dotIndex >= 0 && dotIndex < originalFilename.length() - 1) {
+                extension = originalFilename.substring(dotIndex + 1).toLowerCase(Locale.ROOT);
+            }
+        }
+        if (extension.isEmpty()) {
+            extension = extensionFromContentType(file.getContentType());
+        }
+        if (!extension.equals("mp3") && !extension.equals("wav")) {
+            String format = extension.isEmpty() ? "unknown" : extension;
+            throw new IllegalArgumentException("Unsupported audio format: " + format + ". Please upload mp3 or wav.");
+        }
+        return extension;
+    }
+
+    private String extensionFromContentType(String contentType) {
+        if (contentType == null) {
+            return "";
+        }
+        String normalized = contentType.toLowerCase(Locale.ROOT);
+        if (normalized.equals("audio/mpeg") || normalized.equals("audio/mp3")) {
+            return "mp3";
+        }
+        if (normalized.equals("audio/wav") || normalized.equals("audio/x-wav") || normalized.equals("audio/wave")) {
+            return "wav";
+        }
+        return "";
+    }
+}

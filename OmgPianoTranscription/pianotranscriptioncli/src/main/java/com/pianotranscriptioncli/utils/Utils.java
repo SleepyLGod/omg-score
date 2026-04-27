@@ -61,6 +61,10 @@ public class Utils {
     }
 
     public static String convertMp3ToMidi(Path inputFile, Path outputFile, Path modelPath, Path workDir) throws Exception {
+        return convertAudioToMidi(inputFile, outputFile, modelPath, workDir);
+    }
+
+    public static String convertAudioToMidi(Path inputFile, Path outputFile, Path modelPath, Path workDir) throws Exception {
         Files.createDirectories(workDir);
         Path pcmPath = Files.createTempFile(workDir, "omg-transcription-", ".pcm");
         try {

@@ -11,5 +11,7 @@ public interface TranscriptionService {
 
     Path Mp3TOMidiUploadWithFile(MultipartFile file, String songName) throws Exception;
 
+    Path AudioTOMidiUploadWithFile(MultipartFile file, String songName) throws Exception;
+
     String WavToMidiUpload();
 }

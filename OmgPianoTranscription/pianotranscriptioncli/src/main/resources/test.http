@@ -1,7 +1,7 @@
 # 模拟发送POST测试，运行环境设置为DEV
 
 ###
-POST {{host}}/mp3ToMidiWithFile
+POST {{host}}/audioToMidiWithFile
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
 --WebAppBoundary
@@ -33,4 +33,3 @@ Content-Type: application/json
 }
 
 ###
-

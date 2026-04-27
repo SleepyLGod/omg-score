@@ -53,10 +53,10 @@ public class TranscriptionController {
 
 
     @ResponseBody
-    @PostMapping(value = "/mp3ToMidiWithFile", consumes = {"multipart/form-data"})
-    public ResponseEntity<Resource> Mp3ToMidiWithFile(@RequestParam("file") MultipartFile file,
-                                                      @RequestParam("songName") String songName) throws Exception {
-        Path midiPath = transcriptionService.Mp3TOMidiUploadWithFile(file, songName);
+    @PostMapping(value = {"/audioToMidiWithFile", "/mp3ToMidiWithFile"}, consumes = {"multipart/form-data"})
+    public ResponseEntity<Resource> AudioToMidiWithFile(@RequestParam("file") MultipartFile file,
+                                                        @RequestParam("songName") String songName) throws Exception {
+        Path midiPath = transcriptionService.AudioTOMidiUploadWithFile(file, songName);
         InputStreamResource resource = new InputStreamResource(Files.newInputStream(midiPath));
         String downloadName = songName + ".mid";
         return ResponseEntity.ok()
@@ -68,6 +68,11 @@ public class TranscriptionController {
                                 .build()
                                 .toString())
                 .body(resource);
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> badRequest(IllegalArgumentException exception) {
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
 }

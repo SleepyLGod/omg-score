@@ -29,7 +29,7 @@ https://sleepylgod.github.io/omg-score/
 ```
 
 GitHub Pages only serves the browser frontend. Built-in MIDI playback and the
-3D piano view work there, but MP3-to-MIDI conversion still requires the Docker
+3D piano view work there, but audio-to-MIDI conversion still requires the Docker
 backend below or another deployed backend.
 
 ## 🧊 Isolated Docker run
@@ -56,7 +56,7 @@ The transcription backend listens on:
 http://localhost:8084
 ```
 
-The MP3 upload flow uses `POST /transcription/mp3ToMidiWithFile` and returns the
+The audio upload flow uses `POST /transcription/audioToMidiWithFile` and returns the
 generated MIDI file directly to the browser.
 
 Stop the isolated services with:
@@ -71,11 +71,11 @@ If conversion fails with a missing model error, confirm that
 ## ⚙ Basic
 + The project is divided into 3 parts.
 + The [OmgSimplePlayer](./OmgSimplePlayer/) is the web applet to play standard midi files, and you can change the tempo.
-+ The [OmgPianoPlayer](./OmgPianoPlayer) and [OmgPianoTranscription](./OmgPianoTranscription) is the web applet to convert mp3 files to midi files of piano pieces, and play them dynamically. The former is the frontend and the latter is the backend. You can see a three-dimensional piano model and adjust its spatial position freely. When the piano is being played, you can see the keys move with the notes, and you can also download the converted midi files and use them for other playback editors and editors.
++ The [OmgPianoPlayer](./OmgPianoPlayer) and [OmgPianoTranscription](./OmgPianoTranscription) is the web applet to convert audio files to midi files of piano pieces, and play them dynamically. The former is the frontend and the latter is the backend. You can see a three-dimensional piano model and adjust its spatial position freely. When the piano is being played, you can see the keys move with the notes, and you can also download the converted midi files and use them for other playback editors and editors.
 
 ## 🔨 Tasks
 - [x] Convert mp3 files to standard midi files.
-- [ ] Convert songs and pieces in other formats like wav to standard midi files.
+- [x] Convert songs and pieces in other formats like wav to standard midi files.
 - [x] Choose and upload local files freely.
 - [x] Play all kinds of standard midi files in the web page simply.
 - [x] Change the song tempo in the simple player.
