@@ -1,7 +1,7 @@
-# OMG Score
-
 <p align="center">
-  <strong>Convert piano audio to MIDI, then play it back in an interactive browser piano studio.</strong>
+  <img src="https://readme-typing-svg.herokuapp.com/?font=Roboto+Mono&size=25&width=240&color=46BEA3duration=1600&lines=🎵Oh-My-Score🎶" height="80"/>
+  </br>
+  <strong>✨ Convert piano audio to MIDI, then play it back in an interactive browser piano studio.</strong>
 </p>
 
 <p align="center">
