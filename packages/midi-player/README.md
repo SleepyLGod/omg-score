@@ -13,6 +13,19 @@ npm ci
 npm test
 ```
 
+## Dependency Audit
+
+The current lockfile includes conservative audit fixes that do not require
+`npm audit fix --force`. Remaining high-severity audit items are isolated to
+development tooling chains:
+
+- `watch` through `exec-sh` / `merge`
+- `mocha` through `serialize-javascript`
+- `jsdoc` through `taffydb`
+
+Resolving those requires breaking dependency changes and should be handled in a
+separate upgrade pass.
+
 ## ⚡ Getting Started
 Create a new player by instantiating `MidiPlayer.Player` with an event handler to be called for every MIDI event, then you can load and play a MIDI file.
 
