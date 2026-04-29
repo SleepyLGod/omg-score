@@ -182,7 +182,8 @@ select {
     align-items: center;
     gap: 10px;
 }
-#audio-file {
+#audio-file,
+#midi-file {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -220,7 +221,8 @@ select {
     font-weight: 800;
     text-decoration: none;
 }
-#file-name {
+#file-name,
+#midi-file-name {
     min-width: 0;
     color: var(--muted);
     overflow: hidden;
@@ -343,22 +345,20 @@ input[type="color"] {
     display: grid;
     gap: 7px;
     margin-top: 12px;
-    overflow-x: auto;
-    padding-bottom: 2px;
 }
 .key-row {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(24px, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(44px, 1fr));
     gap: 5px;
-    min-width: max-content;
 }
 kbd {
-    min-width: 24px;
-    min-height: 24px;
+    min-width: 44px;
+    min-height: 34px;
     display: inline-grid;
+    grid-template-rows: auto auto;
     place-items: center;
-    padding: 3px 6px;
+    gap: 3px;
+    padding: 5px 6px;
     border: 1px solid var(--line);
     border-bottom-color: rgba(0, 0, 0, 0.42);
     border-radius: 5px;
@@ -368,15 +368,20 @@ kbd {
     font-size: 11px;
     line-height: 1;
 }
+kbd small {
+    color: var(--muted);
+    font-size: 10px;
+    line-height: 1;
+}
 .value-readout {
     font-variant-numeric: tabular-nums;
 }
 #transport-bar {
     left: 50%;
     bottom: 22px;
-    width: min(760px, calc(100vw - 44px));
+    width: min(920px, calc(100vw - 44px));
     display: grid;
-    grid-template-columns: auto 1fr minmax(180px, 260px);
+    grid-template-columns: minmax(270px, auto) minmax(0, 1fr) minmax(180px, 260px);
     align-items: center;
     gap: 16px;
     padding: 14px;
@@ -398,14 +403,22 @@ kbd {
 }
 .transport-buttons {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 .icon-button {
-    min-width: 58px;
+    min-width: 62px;
+    padding: 0 10px;
     background: rgba(255, 255, 255, 0.08);
     color: var(--text);
     font-size: 12px;
     font-weight: 800;
+}
+.toggle-button[aria-pressed="true"],
+.toggle-button.is-active {
+    border-color: rgba(54, 214, 197, 0.58);
+    background: rgba(54, 214, 197, 0.18);
+    color: var(--accent);
 }
 .track-title {
     display: block;
@@ -419,6 +432,14 @@ kbd {
     text-overflow: ellipsis;
     white-space: nowrap;
     font-weight: 750;
+}
+.interaction-hint {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
 }
 .speed-control {
     display: grid;

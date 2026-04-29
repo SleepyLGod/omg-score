@@ -31,8 +31,8 @@
                 <div class="brand">
                     <img class="brand-mark" src="./assets/Me.png" alt="Von Lu">
                     <span>
-                        <strong class="brand-title">OMG Piano Studio</strong>
-                        <span class="brand-subtitle">Audio transcription and MIDI playback</span>
+                        <strong class="brand-title">OMG Score</strong>
+                        <span class="brand-subtitle">Piano transcription and MIDI playback</span>
                     </span>
                 </div>
                 <span id="midi-status" class="status-pill">
@@ -52,6 +52,14 @@
                     </div>
                 </div>
                 <button id="convert-button" class="primary-button" type="button" disabled>Convert to MIDI</button>
+                <div class="field">
+                    <span class="field-label">MIDI file</span>
+                    <div class="file-row">
+                        <input id="midi-file" type="file" accept="audio/midi,audio/x-midi,.mid,.midi">
+                        <label class="file-pick" for="midi-file">Open MIDI</label>
+                        <span id="midi-file-name">No MIDI selected</span>
+                    </div>
+                </div>
                 <div class="convert-status">
                     <span class="field-label">Status</span>
                     <span id="upload-status">Waiting</span>
@@ -93,15 +101,9 @@
                         <span class="value-readout">Octave <span id="keyboard-octave-value">2</span></span>
                     </summary>
                     <div class="key-grid">
-                        <div class="key-row" aria-label="Lower keyboard row">
-                            <kbd>Z</kbd><kbd>S</kbd><kbd>X</kbd><kbd>D</kbd><kbd>C</kbd><kbd>V</kbd><kbd>G</kbd><kbd>B</kbd><kbd>H</kbd><kbd>N</kbd><kbd>J</kbd><kbd>M</kbd><kbd>,</kbd>
-                        </div>
-                        <div class="key-row" aria-label="Middle keyboard row">
-                            <kbd>Q</kbd><kbd>2</kbd><kbd>W</kbd><kbd>3</kbd><kbd>E</kbd><kbd>R</kbd><kbd>5</kbd><kbd>T</kbd><kbd>6</kbd><kbd>Y</kbd><kbd>7</kbd><kbd>U</kbd>
-                        </div>
-                        <div class="key-row" aria-label="Upper keyboard row">
-                            <kbd>I</kbd><kbd>9</kbd><kbd>O</kbd><kbd>0</kbd><kbd>P</kbd><kbd>[</kbd><kbd>=</kbd><kbd>]</kbd>
-                        </div>
+                        <div id="lower-key-row" class="key-row" aria-label="Lower keyboard row"></div>
+                        <div id="middle-key-row" class="key-row" aria-label="Middle keyboard row"></div>
+                        <div id="upper-key-row" class="key-row" aria-label="Upper keyboard row"></div>
                     </div>
                 </details>
             </aside>
@@ -109,11 +111,15 @@
             <footer id="transport-bar">
                 <div class="transport-buttons">
                     <button id="play-button" class="icon-button" type="button" aria-label="Play">Play</button>
+                    <button id="restart-button" class="icon-button" type="button" aria-label="Restart">Restart</button>
                     <button id="stop-button" class="icon-button" type="button" aria-label="Stop">Stop</button>
+                    <button id="loop-button" class="icon-button toggle-button" type="button" aria-label="Loop" aria-pressed="false">Loop</button>
+                    <button id="reset-view-button" class="icon-button" type="button" aria-label="Reset view">Reset view</button>
                 </div>
                 <div>
                     <span class="track-title">Now playing</span>
                     <span id="active-song-title">Game Of Thrones Theme, Ramin Djawadi</span>
+                    <span class="interaction-hint">Mouse/touch keys · Drag/wheel camera · Keyboard performance</span>
                 </div>
                 <div class="speed-control">
                     <div class="speed-label">

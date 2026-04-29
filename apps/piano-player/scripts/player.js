@@ -4,8 +4,12 @@ var localTranscriptionApiUrl = "http://localhost:8084/transcription/audioToMidiW
 var transcriptionApiUrl = window.OMG_TRANSCRIPTION_API_URL || defaultTranscriptionApiUrl();
 var activeMidiUrl = null;
 var convertedMidiUrl = null;
+var localMidiUrl = null;
 var midiReady = false;
+var loopEnabled = false;
+var loopRestartQueued = false;
 var uploadFileInput = document.getElementById("audio-file");
+var midiFileInput = document.getElementById("midi-file");
 var convertButton = document.getElementById("convert-button");
 var uploadStatus = document.getElementById("upload-status");
 var conversionResult = document.getElementById("conversion-result");
@@ -13,6 +17,7 @@ var conversionResultText = document.getElementById("conversion-result-text");
 var downloadMidiLink = document.getElementById("download-midi-link");
 var retryConvertButton = document.getElementById("retry-convert-button");
 var fileName = document.getElementById("file-name");
+var midiFileName = document.getElementById("midi-file-name");
 var midiStatus = document.getElementById("midi-status");
 var midiStatusText = document.getElementById("midi-status-text");
 var songSelect = document.getElementById("song-select");
@@ -25,6 +30,64 @@ var keyboardOctaveValue = document.getElementById("keyboard-octave-value");
 var noteColorInput = document.getElementById("note-color");
 var playButton = document.getElementById("play-button");
 var stopButton = document.getElementById("stop-button");
+var restartButton = document.getElementById("restart-button");
+var loopButton = document.getElementById("loop-button");
+var resetViewButton = document.getElementById("reset-view-button");
+var lowerKeyRow = document.getElementById("lower-key-row");
+var middleKeyRow = document.getElementById("middle-key-row");
+var upperKeyRow = document.getElementById("upper-key-row");
+var noteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+var keyboardLayoutRows = [
+    {
+        element: lowerKeyRow,
+        keys: [
+            { label: "Z", code: 90, offset: 0 },
+            { label: "S", code: 83, offset: 1 },
+            { label: "X", code: 88, offset: 2 },
+            { label: "D", code: 68, offset: 3 },
+            { label: "C", code: 67, offset: 4 },
+            { label: "V", code: 86, offset: 5 },
+            { label: "G", code: 71, offset: 6 },
+            { label: "B", code: 66, offset: 7 },
+            { label: "H", code: 72, offset: 8 },
+            { label: "N", code: 78, offset: 9 },
+            { label: "J", code: 74, offset: 10 },
+            { label: "M", code: 77, offset: 11 },
+            { label: ",", code: 188, offset: 12 }
+        ]
+    },
+    {
+        element: middleKeyRow,
+        keys: [
+            { label: "Q", code: 81, offset: 12 },
+            { label: "2", code: 50, offset: 13 },
+            { label: "W", code: 87, offset: 14 },
+            { label: "3", code: 51, offset: 15 },
+            { label: "E", code: 69, offset: 16 },
+            { label: "R", code: 82, offset: 17 },
+            { label: "5", code: 53, offset: 18 },
+            { label: "T", code: 84, offset: 19 },
+            { label: "6", code: 54, offset: 20 },
+            { label: "Y", code: 89, offset: 21 },
+            { label: "7", code: 55, offset: 22 },
+            { label: "U", code: 85, offset: 23 }
+        ]
+    },
+    {
+        element: upperKeyRow,
+        keys: [
+            { label: "I", code: 73, offset: 24 },
+            { label: "9", code: 57, offset: 25 },
+            { label: "O", code: 79, offset: 26 },
+            { label: "0", code: 48, offset: 27 },
+            { label: "P", code: 80, offset: 28 },
+            { label: "[", code: 219, offset: 29 },
+            { label: "=", code: 187, offset: 30 },
+            { label: "]", code: 221, offset: 31 }
+        ]
+    }
+];
+var keyCodeToOffset = {};
 
 function defaultTranscriptionApiUrl() {
     var host = window.location.hostname;
@@ -73,6 +136,32 @@ function formatBytes(bytes) {
     return (kilobytes / 1024).toFixed(1) + " MB";
 }
 
+function noteNameForOffset(offset) {
+    var absoluteNote = controls.octave * 12 + offset;
+    return noteNames[absoluteNote % 12] + Math.floor(absoluteNote / 12);
+}
+
+function renderKeyboardMap() {
+    keyCodeToOffset = {};
+    keyboardLayoutRows.forEach(function (row) {
+        row.element.innerHTML = "";
+        row.keys.forEach(function (key) {
+            keyCodeToOffset[key.code] = key.offset;
+
+            var keyLabel = document.createElement("span");
+            keyLabel.textContent = key.label;
+
+            var noteLabel = document.createElement("small");
+            noteLabel.textContent = noteNameForOffset(key.offset);
+
+            var keyElement = document.createElement("kbd");
+            keyElement.appendChild(keyLabel);
+            keyElement.appendChild(noteLabel);
+            row.element.appendChild(keyElement);
+        });
+    });
+}
+
 function downloadNameFromSongName(songName) {
     return songName + ".mid";
 }
@@ -80,8 +169,14 @@ function downloadNameFromSongName(songName) {
 function loadMidiFile(url, start) {
     activeMidiUrl = url;
     MIDI.Player.stop();
+    releaseKeyboardNotes();
+    setPlaybackState(false);
     MIDI.Player.timeWarp = 1 / controls.playbackSpeed;
-    MIDI.Player.loadFile(url, start ? MIDI.Player.start : undefined);
+    MIDI.Player.loadFile(url, function () {
+        if (start) {
+            startPlayback();
+        }
+    });
 }
 
 function loadConvertedMidi(blob) {
@@ -98,6 +193,76 @@ function reloadActiveMidi() {
     }
 }
 
+function setPlaybackState(isPlaying) {
+    playButton.textContent = isPlaying ? "Pause" : "Play";
+    playButton.setAttribute("aria-label", isPlaying ? "Pause" : "Play");
+}
+
+function startPlayback() {
+    if (!activeMidiUrl || !midiReady) return;
+    MIDI.Player.resume();
+    setPlaybackState(true);
+}
+
+function pausePlayback() {
+    MIDI.Player.pause();
+    setPlaybackState(false);
+}
+
+function playPausePlayback() {
+    if (MIDI.Player.playing) {
+        pausePlayback();
+    } else {
+        startPlayback();
+    }
+}
+
+function stopPlayback() {
+    MIDI.Player.stop();
+    releaseKeyboardNotes();
+    setPlaybackState(false);
+}
+
+function restartPlayback() {
+    if (!activeMidiUrl || !midiReady) return;
+    loopRestartQueued = false;
+    loadMidiFile(activeMidiUrl, true);
+}
+
+function setLoopEnabled(enabled) {
+    loopEnabled = enabled;
+    loopButton.classList.toggle("is-active", loopEnabled);
+    loopButton.setAttribute("aria-pressed", loopEnabled ? "true" : "false");
+}
+
+function resetCameraView() {
+    camera.position.set(-3.35, 5.0, 11.5);
+    cameraControls.target.set(4.5, 0, 0);
+    cameraControls.update(0);
+}
+
+function setupPlaybackAnimation() {
+    MIDI.Player.setAnimation({
+        interval: 250,
+        callback: function (data) {
+            if (!MIDI.Player.playing || !data.end) return;
+
+            var reachedEnd = data.now >= data.end;
+            if (!reachedEnd) {
+                loopRestartQueued = false;
+                return;
+            }
+
+            if (loopEnabled && !loopRestartQueued) {
+                loopRestartQueued = true;
+                window.setTimeout(restartPlayback, 0);
+            } else if (!loopEnabled) {
+                stopPlayback();
+            }
+        }
+    });
+}
+
 function responseError(response) {
     return response.text().then(function (message) {
         message = message || response.statusText || "Request failed";
@@ -111,6 +276,26 @@ uploadFileInput.onchange = function () {
     hideConversionResult();
     setUploadStatus(file ? "Ready to convert" : "Waiting");
     updateUploadButton();
+};
+
+midiFileInput.onchange = function () {
+    var file = midiFileInput.files[0];
+    midiFileName.textContent = file ? file.name : "No MIDI selected";
+    if (!file) return;
+
+    if (!midiReady) {
+        setUploadStatus("Wait for soundfont, then open MIDI again.");
+        return;
+    }
+
+    if (localMidiUrl) {
+        URL.revokeObjectURL(localMidiUrl);
+    }
+    localMidiUrl = URL.createObjectURL(file);
+    hideConversionResult();
+    setUploadStatus("Local MIDI loaded");
+    activeSongTitle.textContent = songNameFromFile(file);
+    loadMidiFile(localMidiUrl, true);
 };
 
 retryConvertButton.onclick = function () {
@@ -227,11 +412,11 @@ var controls = new function () {
     this.noteOnColor = [240, 179, 90, 1.0]; //颜色数组
     this.play = function ()//播放
     {
-        MIDI.Player.resume();
+        playPausePlayback();
     };
     this.stop = function ()//停止至开始
     {
-        MIDI.Player.stop();
+        stopPlayback();
     }
 };
 var songsToFiles = {
@@ -546,49 +731,8 @@ function render(delta) {
 frame();
 //******************
 function keyCode_to_keyIndex(keyCode) {
-    var note = -1;
-    //-----------------------------------
-    if (keyCode == 90) note = 0; // C 0
-    if (keyCode == 83) note = 1; // C#0
-    if (keyCode == 88) note = 2; // D 0
-    if (keyCode == 68) note = 3; // D#0
-    if (keyCode == 67) note = 4; // E 0
-    if (keyCode == 86) note = 5; // F 0
-    if (keyCode == 71) note = 6; // F#0
-    if (keyCode == 66) note = 7; // G 0
-    if (keyCode == 72) note = 8; // G#0
-    if (keyCode == 78) note = 9; // A 0
-    if (keyCode == 74) note = 10; // A#0
-    if (keyCode == 77) note = 11; // B 0
-    if (keyCode == 188) note = 12; // C 0
-    
-    //-----------------------------------
-    if (keyCode == 81) note = 12; // C 1
-    if (keyCode == 50) note = 13; // C#1
-    if (keyCode == 87) note = 14; // D 1
-    if (keyCode == 51) note = 15; // D#1
-    if (keyCode == 69) note = 16; // E 1
-    if (keyCode == 82) note = 17; // F 1
-    if (keyCode == 53) note = 18; // F#1
-    if (keyCode == 84) note = 19; // G 1
-    if (keyCode == 54) note = 20; // G#1
-    if (keyCode == 89) note = 21; // A 1
-    if (keyCode == 55) note = 22; // A#1
-    if (keyCode == 85) note = 23; // B 1
-    //-----------------------------------
-    if (keyCode == 73) note = 24; // C 2
-    if (keyCode == 57) note = 25; // C#2
-    if (keyCode == 79) note = 26; // D 2
-    if (keyCode == 48) note = 27; // D#2
-    if (keyCode == 80) note = 28; // E 2
-    if (keyCode == 219) note = 29; // F 2
-    if (keyCode == 187) note = 30; // F#2
-    if (keyCode == 221) note = 31; // G 2
-    //-----------------------------------
-    
-    if (note == -1) return -1;
-    
-    return note + controls.octave * 12;
+    if (typeof keyCodeToOffset[keyCode] !== "number") return -1;
+    return keyCodeToOffset[keyCode] + controls.octave * 12;
     
 }
 
@@ -633,6 +777,7 @@ renderer.domElement.addEventListener("touchcancel", onPianoTouchEnd, true);
     
 window.onload = function () {
     populateSongSelect();
+    renderKeyboardMap();
     songSelect.onchange = function () {
         controls.song = songSelect.value;
         activeSongTitle.textContent = songTitleFromFile(controls.song);
@@ -642,6 +787,11 @@ window.onload = function () {
     };
     playButton.onclick = controls.play;
     stopButton.onclick = controls.stop;
+    restartButton.onclick = restartPlayback;
+    loopButton.onclick = function () {
+        setLoopEnabled(!loopEnabled);
+    };
+    resetViewButton.onclick = resetCameraView;
     speedSlider.oninput = function () {
         controls.playbackSpeed = parseFloat(speedSlider.value);
         speedValue.textContent = controls.playbackSpeed.toFixed(1) + "x";
@@ -652,6 +802,7 @@ window.onload = function () {
         octaveValue.textContent = controls.octave;
         keyboardOctaveValue.textContent = controls.octave;
         releaseKeyboardNotes();
+        renderKeyboardMap();
     };
     noteColorInput.oninput = function () {
         setNoteColorFromHex(noteColorInput.value);
@@ -672,6 +823,7 @@ window.onload = function () {
                 key_status("_" + pianoKey, keyState.note_off);
             }
         });
+        setupPlaybackAnimation();
 
         // Close the MIDI loader widget once the custom controls are ready.
         MIDI.loader.stop();
