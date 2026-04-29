@@ -6,6 +6,7 @@
 
 <p align="center">
   <a href="https://github.com/SleepyLGod/omg-score/actions/workflows/blank.yml"><img src="https://github.com/SleepyLGod/omg-score/actions/workflows/blank.yml/badge.svg" alt="Node.js CI"></a>
+  <a href="https://github.com/SleepyLGod/omg-score/actions/workflows/backend.yml"><img src="https://github.com/SleepyLGod/omg-score/actions/workflows/backend.yml/badge.svg" alt="Backend CI"></a>
   <a href="https://github.com/SleepyLGod/omg-score/actions/workflows/pages.yml"><img src="https://github.com/SleepyLGod/omg-score/actions/workflows/pages.yml/badge.svg" alt="GitHub Pages"></a>
   <a href="https://github.com/SleepyLGod/omg-score/commits/main"><img src="https://img.shields.io/github/last-commit/SleepyLGod/omg-score" alt="Last commit"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MPL--2.0-blue" alt="License: MPL 2.0"></a>
@@ -22,6 +23,7 @@ OMG Score is a browser-based piano workflow:
 - Upload MP3/WAV piano audio and convert it to a standard MIDI file.
 - Play MIDI files in a 3D piano scene with animated keys.
 - Perform notes directly with mouse, touch, or keyboard input.
+- Download converted MIDI files from the browser after conversion.
 - Run the full stack locally through Docker without installing Node, Java,
   Maven, or FFmpeg on the host.
 
@@ -94,12 +96,16 @@ If conversion fails with a missing model error, confirm that
 - [x] Convert MP3 files to standard MIDI files.
 - [x] Convert WAV files to standard MIDI files.
 - [x] Upload local audio files freely.
+- [x] Download converted MIDI files from the piano player.
 - [x] Play standard MIDI files in the browser.
 - [x] Change playback tempo in the MIDI player.
 - [x] Animate piano keys during MIDI playback.
 - [x] Support interactive mouse, touch, and keyboard performance input.
-- [ ] Improve conversion speed and request feedback during long-running jobs.
-- [ ] Explore dynamic playback for non-piano instruments.
+- [x] Run frontend and backend CI on GitHub Actions.
+- [ ] Add progress tracking for long-running conversion jobs.
+- [ ] Add playback timeline, seek, and loop controls.
+- [ ] Profile conversion time and evaluate ONNX session reuse.
+- [ ] Research multi-instrument MIDI playback and visualization.
 
 ## Tech Stack
 

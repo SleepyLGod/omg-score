@@ -31,11 +31,6 @@ public class TranscriptionController {
         return "ok";
     }
 
-    @PostMapping(value = "/fuck")
-    public String Mp3TOMidiUpload() throws Exception {
-        return "hello";
-    }
-
     @PostMapping(value = "/mp3ToMidi", consumes = {"application/json"})
     @ResponseBody
     public Mp3ImportVO Mp3ToMidi(@RequestBody Mp3ImportDTO mp3ImportDTO) throws Exception {

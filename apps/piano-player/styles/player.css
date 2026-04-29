@@ -191,6 +191,7 @@ select {
 }
 .file-pick,
 .primary-button,
+.secondary-button,
 .icon-button {
     min-height: 40px;
     border: 1px solid var(--line);
@@ -206,6 +207,18 @@ select {
     background: rgba(255, 255, 255, 0.08);
     color: var(--text);
     font-weight: 700;
+}
+.secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 11px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
 }
 #file-name {
     min-width: 0;
@@ -228,6 +241,7 @@ select {
     transform: none;
 }
 .file-pick:hover,
+.secondary-button:hover,
 .icon-button:hover,
 .primary-button:not(:disabled):hover {
     transform: translateY(-1px);
@@ -245,6 +259,27 @@ select {
 #upload-status {
     color: var(--muted);
     overflow-wrap: anywhere;
+}
+.conversion-result {
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+}
+.conversion-result[hidden] {
+    display: none;
+}
+#conversion-result-text {
+    display: block;
+    margin-top: 5px;
+    color: var(--text);
+    overflow-wrap: anywhere;
+}
+.result-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
 }
 select,
 input[type="range"] {

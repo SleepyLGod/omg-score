@@ -2,20 +2,19 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
-
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+OMG Score is currently pre-release software. Security fixes are handled on the
+default branch.
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+Please report suspected vulnerabilities through GitHub Security Advisories when
+available, or open a private report with enough detail to reproduce the issue.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Include:
+
+- Affected commit or release.
+- Steps to reproduce.
+- Expected and observed behavior.
+- Any relevant logs, files, or request examples.
+
+Please do not publish exploit details before the issue has been reviewed.

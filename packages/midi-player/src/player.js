@@ -373,7 +373,6 @@ class Player {
 		this.resetTracks();
 		while (!this.endOfFile()) {
 			this.playLoop(true);
-			console.log(this.bytesProcessed(), this.midiChunksByteLength);
 		}
 		this.events = this.getEvents();
 		this.totalEvents = this.getTotalEvents();
@@ -383,7 +382,6 @@ class Player {
 
 		// Leave tracks in pristine condish
 		this.resetTracks();
-		console.log('Song time: ' + this.getSongTime() + ' seconds / ' + this.totalTicks + ' ticks.');
 		this.triggerPlayerEvent('fileLoaded', this);
 		return this;
 	}

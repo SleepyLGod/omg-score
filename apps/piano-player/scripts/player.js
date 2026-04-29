@@ -8,6 +8,10 @@ var midiReady = false;
 var uploadFileInput = document.getElementById("audio-file");
 var convertButton = document.getElementById("convert-button");
 var uploadStatus = document.getElementById("upload-status");
+var conversionResult = document.getElementById("conversion-result");
+var conversionResultText = document.getElementById("conversion-result-text");
+var downloadMidiLink = document.getElementById("download-midi-link");
+var retryConvertButton = document.getElementById("retry-convert-button");
 var fileName = document.getElementById("file-name");
 var midiStatus = document.getElementById("midi-status");
 var midiStatusText = document.getElementById("midi-status-text");
@@ -34,6 +38,20 @@ function setUploadStatus(message) {
     uploadStatus.textContent = message;
 }
 
+function hideConversionResult() {
+    conversionResult.hidden = true;
+    conversionResultText.textContent = "No MIDI generated yet";
+    downloadMidiLink.removeAttribute("href");
+    downloadMidiLink.removeAttribute("download");
+}
+
+function showConversionResult(downloadName, blob) {
+    conversionResult.hidden = false;
+    conversionResultText.textContent = downloadName + " (" + formatBytes(blob.size) + ")";
+    downloadMidiLink.href = convertedMidiUrl;
+    downloadMidiLink.download = downloadName;
+}
+
 function setMidiStatus(message, statusClass) {
     midiStatus.className = "status-pill" + (statusClass ? " " + statusClass : "");
     midiStatusText.textContent = message;
@@ -45,6 +63,18 @@ function updateUploadButton() {
 
 function songNameFromFile(file) {
     return file.name.replace(/\.[^/.]+$/, "") || "upload";
+}
+
+function formatBytes(bytes) {
+    if (!bytes) return "0 B";
+    if (bytes < 1024) return bytes + " B";
+    var kilobytes = bytes / 1024;
+    if (kilobytes < 1024) return kilobytes.toFixed(1) + " KB";
+    return (kilobytes / 1024).toFixed(1) + " MB";
+}
+
+function downloadNameFromSongName(songName) {
+    return songName + ".mid";
 }
 
 function loadMidiFile(url, start) {
@@ -78,8 +108,17 @@ function responseError(response) {
 uploadFileInput.onchange = function () {
     var file = uploadFileInput.files[0];
     fileName.textContent = file ? file.name : "No file selected";
+    hideConversionResult();
+    setUploadStatus(file ? "Ready to convert" : "Waiting");
     updateUploadButton();
 };
+
+retryConvertButton.onclick = function () {
+    if (!convertButton.disabled) {
+        convertButton.click();
+    }
+};
+
 convertButton.onclick = function () {
     var file = uploadFileInput.files[0];
     if (!file) return;
@@ -90,10 +129,12 @@ convertButton.onclick = function () {
 
     var formData = new FormData();
     formData.append("file", file);
-    formData.append("songName", songNameFromFile(file));
+    var songName = songNameFromFile(file);
+    formData.append("songName", songName);
 
     convertButton.disabled = true;
-    setUploadStatus("Converting");
+    hideConversionResult();
+    setUploadStatus("Converting. This may take a minute.");
 
     fetch(transcriptionApiUrl, {
         method: "POST",
@@ -105,13 +146,35 @@ convertButton.onclick = function () {
         return response.blob();
     }).then(function (blob) {
         loadConvertedMidi(blob);
-        setUploadStatus("Loaded");
-        activeSongTitle.textContent = songNameFromFile(file);
+        var downloadName = downloadNameFromSongName(songName);
+        setUploadStatus("Converted and loaded");
+        showConversionResult(downloadName, blob);
+        activeSongTitle.textContent = songName;
     }).catch(function (error) {
         console.error(error);
-        setUploadStatus(error.message || "Failed");
+        setUploadStatus(conversionErrorMessage(error));
     }).finally(updateUploadButton);
 };
+
+function conversionErrorMessage(error) {
+    var message = error && error.message ? error.message : "";
+    if (message.indexOf("Failed to fetch") >= 0 || message.indexOf("NetworkError") >= 0) {
+        return "Backend unavailable. Start Docker and retry.";
+    }
+    if (message.indexOf("Unsupported audio format") >= 0) {
+        return "Unsupported file. Upload MP3 or WAV.";
+    }
+    if (message.indexOf("ONNX model not found") >= 0 || message.indexOf("missing model") >= 0) {
+        return "Backend model missing. Check .isolation/models/transcription.onnx.";
+    }
+    if (message.indexOf("ffmpeg") >= 0 || message.indexOf("audio decode") >= 0) {
+        return "Audio decode failed. Try another MP3/WAV file.";
+    }
+    if (message.indexOf("HTTP 500") >= 0) {
+        return "Backend conversion failed. Check Docker logs.";
+    }
+    return message || "Conversion failed.";
+}
     
 var scene = new THREE.Scene();
 scene.fog = new THREE.Fog(0x08090b, 12, 34);

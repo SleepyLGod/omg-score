@@ -56,6 +56,16 @@
                     <span class="field-label">Status</span>
                     <span id="upload-status">Waiting</span>
                 </div>
+                <div id="conversion-result" class="conversion-result" hidden>
+                    <div>
+                        <span class="field-label">Result</span>
+                        <span id="conversion-result-text">No MIDI generated yet</span>
+                    </div>
+                    <div class="result-actions">
+                        <a id="download-midi-link" class="secondary-button" href="#" download>Download MIDI</a>
+                        <button id="retry-convert-button" class="secondary-button" type="button">Retry</button>
+                    </div>
+                </div>
             </section>
 
             <aside id="settings-panel" class="panel">
