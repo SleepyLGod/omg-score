@@ -5,10 +5,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/SleepyLGod/omg-score/actions/workflows/blank.yml"><img src="https://github.com/SleepyLGod/omg-score/actions/workflows/blank.yml/badge.svg" alt="Node.js CI"></a>
-  <a href="https://github.com/SleepyLGod/omg-score/actions/workflows/backend.yml"><img src="https://github.com/SleepyLGod/omg-score/actions/workflows/backend.yml/badge.svg" alt="Backend CI"></a>
-  <a href="https://github.com/SleepyLGod/omg-score/actions/workflows/pages.yml"><img src="https://github.com/SleepyLGod/omg-score/actions/workflows/pages.yml/badge.svg" alt="GitHub Pages"></a>
-  <a href="https://github.com/SleepyLGod/omg-score/commits/main"><img src="https://img.shields.io/github/last-commit/SleepyLGod/omg-score" alt="Last commit"></a>
+  <a href="https://github.com/SleepyLGod/oh-my-score/actions/workflows/blank.yml"><img src="https://github.com/SleepyLGod/oh-my-score/actions/workflows/blank.yml/badge.svg" alt="Node.js CI"></a>
+  <a href="https://github.com/SleepyLGod/oh-my-score/actions/workflows/backend.yml"><img src="https://github.com/SleepyLGod/oh-my-score/actions/workflows/backend.yml/badge.svg" alt="Backend CI"></a>
+  <a href="https://github.com/SleepyLGod/oh-my-score/actions/workflows/pages.yml"><img src="https://github.com/SleepyLGod/oh-my-score/actions/workflows/pages.yml/badge.svg" alt="GitHub Pages"></a>
+  <a href="https://github.com/SleepyLGod/oh-my-score/commits/main"><img src="https://img.shields.io/github/last-commit/SleepyLGod/oh-my-score" alt="Last commit"></a>
   <a href="./LICENSE"><img src="https://img.shields.io/badge/license-MPL--2.0-blue" alt="License: MPL 2.0"></a>
 </p>
 
@@ -46,7 +46,7 @@ docs/
 ## GitHub Pages Demo
 
 ```text
-https://sleepylgod.github.io/omg-score/
+https://sleepylgod.github.io/oh-my-score/
 ```
 
 The Pages workflow publishes [`apps/piano-player`](./apps/piano-player/).
@@ -97,13 +97,16 @@ If conversion fails with a missing model error, confirm that
 - [x] Convert WAV files to standard MIDI files.
 - [x] Upload local audio files freely.
 - [x] Download converted MIDI files from the piano player.
+- [x] Open local MIDI files directly in the browser.
 - [x] Play standard MIDI files in the browser.
 - [x] Change playback tempo in the MIDI player.
+- [x] Control playback with play/pause, restart, stop, loop, and reset view.
 - [x] Animate piano keys during MIDI playback.
 - [x] Support interactive mouse, touch, and keyboard performance input.
+- [x] Show keyboard mapping with note labels for the selected octave.
 - [x] Run frontend and backend CI on GitHub Actions.
 - [ ] Add progress tracking for long-running conversion jobs.
-- [ ] Add playback timeline, seek, and loop controls.
+- [ ] Add playback timeline and seek controls.
 - [ ] Profile conversion time and evaluate ONNX session reuse.
 - [ ] Research multi-instrument MIDI playback and visualization.
 

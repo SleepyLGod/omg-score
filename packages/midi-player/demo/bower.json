@@ -1,7 +1,7 @@
 {
     "name": "OmgParser Demo",
     "main": "index.html",
-    "homepage": "https://github.com/SleepyLGod/omg-score",
+    "homepage": "https://github.com/SleepyLGod/oh-my-score",
     "description": "A web based MIDI player using MidiPlayerJS engine.",
     "authors": [
         "Haodong Lu <2441164168+lhd@gmail.com>"

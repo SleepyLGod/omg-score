@@ -33,10 +33,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SleepyLGod/omg-score.git"
+    "url": "git+https://github.com/SleepyLGod/oh-my-score.git"
   },
   "bugs": {
-    "url": "https://github.com/SleepyLGod/omg-score/issues"
+    "url": "https://github.com/SleepyLGod/oh-my-score/issues"
   },
   "keywords": [
     "midi",
