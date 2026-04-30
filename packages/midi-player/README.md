@@ -15,16 +15,9 @@ npm test
 
 ## Dependency Audit
 
-The current lockfile includes conservative audit fixes that do not require
-`npm audit fix --force`. Remaining high-severity audit items are isolated to
-development tooling chains:
-
-- `watch` through `exec-sh` / `merge`
-- `mocha` through `serialize-javascript`
-- `jsdoc` through `taffydb`
-
-Resolving those requires breaking dependency changes and should be handled in a
-separate upgrade pass.
+The package avoids known vulnerable development-tooling chains by removing the
+unused `watch` dependency, using JSDoc 4, and overriding Mocha's transitive
+`serialize-javascript` dependency to a patched release.
 
 ## ⚡ Getting Started
 Create a new player by instantiating `MidiPlayer.Player` with an event handler to be called for every MIDI event, then you can load and play a MIDI file.

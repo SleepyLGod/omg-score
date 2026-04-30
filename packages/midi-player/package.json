@@ -8,7 +8,6 @@
     "pretest": "npm run build",
     "test": "mocha",
     "build": "rollup -c",
-    "watch": "watch 'npm run build' src",
     "docs": "jsdoc src README.md -d ./docs -t ./node_modules/minami",
     "prepare": "npm run build",
     "postinstall": "node postinstall.js",
@@ -20,12 +19,14 @@
     "@babel/preset-env": "^7.15.6",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-replace": "^2.4.2",
-    "jsdoc": "^3.6.7",
+    "jsdoc": "^4.0.5",
     "minami": "^1.1.1",
     "mocha": "^10.0.0",
     "rollup": "^2.56.3",
-    "sinon": "^7.1.1",
-    "watch": "^1.0.2"
+    "sinon": "^7.1.1"
+  },
+  "overrides": {
+    "serialize-javascript": "^7.0.5"
   },
   "directories": {
     "lib": "src",
